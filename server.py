@@ -29,8 +29,7 @@ app = Flask(__name__, template_folder=tmpl_dir)
 #
 #     DATABASEURI = "postgresql://gravano:foobar@34.75.94.195/proj1part2"
 #
-DATABASEURI = "postgresql://user:password@34.75.94.195/proj1part2"
-
+DATABASEURI = "postgresql://krw2146:618771@34.75.94.195/proj1part2"
 
 #
 # This line creates a database engine that knows how to connect to the URI above.
@@ -96,6 +95,25 @@ def teardown_request(exception):
 # see for routing: https://flask.palletsprojects.com/en/2.0.x/quickstart/?highlight=routing
 # see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
 #
+
+@app.route('/get_student_info', methods=['POST'])
+def get_student_info():
+    student_id = request.form['studentID']
+    student_info = fetch_student_info(student_id)
+
+    if student_info:
+        return render_template('student.html', student_info=student_info)
+    else:
+        return "Student not found"
+
+def fetch_student_info(student_id):
+      
+      cursor = g.conn.execute(text("SELECT * FROM students WHERE studentID = :id"), id=student_id)
+      g.conn.commit()
+      student_info = cursor.fetchone()
+      return student_info
+
+
 @app.route('/')
 def index():
   """

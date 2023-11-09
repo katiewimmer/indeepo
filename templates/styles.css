@@ -1,0 +1,22 @@
+body{ 
+    font-size: 15pt;
+    font-family: 'Times New Roman', Times, serif;
+    background-color: #245c94; /* Dark blue background for the entire page */
+    /*color: white; Set the default text color to white */
+}
+
+button {
+    background-color: lightblue;
+    padding: 20px 40px; 
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    }
+
+.find-button {
+        background-color:  lightblue; /* A slightly darker shade on hover */
+        padding: 0px 15px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+    }

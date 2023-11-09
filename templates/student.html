@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="styles.css"> 
+  </head>
+  <h1>Indeepo - STUDENT VIEW</h1>
+
+  <h2>Enter your student ID Number:</h2>
+    <form action="/get_student_info" method="POST">
+        <p>ID: <input type="text" name="studentID"> <input type="submit" value="Find" class="find-button"></p>
+    </form>
+    
+    <h2>Student Information</h2>
+    <ul>
+        <li>Student ID: {{ student_info[0] }}</li>
+        <li>Name: {{ student_info[1] }}</li>
+        <li>Age: {{ student_info[2] }}</li>
+        <li>Gender: {{ student_info[3] }}</li>
+        <li>Status: {{ student_info[4] }}</li>
+        <li>GPA: {{ student_info[5] }}</li>
+    </ul>
+
+  </form>
+
+
+</body>
+
+</html>
