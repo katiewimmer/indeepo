@@ -1,6 +1,6 @@
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="styles.css"> 
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
   </head>
 
 <body>
@@ -8,10 +8,10 @@
 
   <h2> Please select your affiliation:</h2>
   
-  <a href="school.html" class="button"><button type="button">School</button></a>
-  <a href="filmmaker.html" class="button"><button type="button">Filmmaker</button></a>
+  <a href="{{ url_for('school') }}" class="button"><button type="button">School</button></a>
+  <a href="{{ url_for('filmmaker') }}" class="button"><button type="button">Filmmaker</button></a>
   <a href="student.html" class="button"><button type="button">Student</button></a>
-
+  <!-- need to fix redirect for student-->
 <p>
 </form>
 

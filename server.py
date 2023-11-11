@@ -30,7 +30,7 @@ print("hello")
 #
 #     DATABASEURI = "postgresql://gravano:foobar@34.75.94.195/proj1part2"
 #
-DATABASEURI = "postgresql://krw2146:618771@34.75.94.195/proj1part2"
+DATABASEURI = "postgresql://krw2146:618771@34.74.171.121/proj1part2"
 
 #
 # This line creates a database engine that knows how to connect to the URI above.
@@ -89,10 +89,21 @@ def teardown_request(exception):
 # see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
 #
 
+@app.route('/school/')
+def school():
+    # Your school route logic here
+    return render_template('school.html')
+
+@app.route('/filmmaker/')
+def filmmaker():
+    # Your filmmaker route logic here
+    return render_template('filmmaker.html')
+
+
 @app.route('/student/', methods=['GET'])
 def get_student_info():
     print("hello")
-    student_id = request.form['studentID']
+    student_id = request.args.get['studentID']
     student_info = fetch_student_info(student_id)
     print(student_id)
     if student_info:
@@ -128,10 +139,11 @@ def index():
   # example of a database query 
   #
   # cursor = g.conn.execute("SELECT name FROM test")
-  g.conn.commit()
+  #g.conn.commit()
 
   # 2 ways to get results
 
+  '''
   # Indexing result by column number
   names = []
   for result in cursor:
@@ -139,11 +151,11 @@ def index():
 
   # Indexing result by column name
   names = []
-  results = cursor.mappings.all()
+  results = cursor.mappings().all()
   for result in results:
     names.append(result["name"])
   cursor.close()
-
+ '''
   #
   # Flask uses Jinja templates, which is an extension to HTML where you can
   # pass data to a template and dynamically generate HTML based on the data
@@ -170,13 +182,14 @@ def index():
   #     <div>{{n}}</div>
   #     {% endfor %}
   #
-  context = dict(data = names)
-
+  #context = dict(data = names)
+  context = dict(data=['grace hopper', 'alan turing', 'ada lovelace'])
 
   #
   # render_template looks in the templates/ folder for files.
   # for example, the below file reads template/index.html
   #
+  #return render_template("index.html", **context)
   return render_template("index.html", **context)
 
 #
