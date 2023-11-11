@@ -1,6 +1,6 @@
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="styles.css"> 
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}"> 
   </head>
   <h1>Indeepo - STUDENT VIEW</h1>
 
@@ -10,14 +10,18 @@
     </form>
     
     <h2>Student Information</h2>
-    <ul>
+    {% if student_info %}
+      <ul>
         <li>Student ID: {{ student_info[0] }}</li>
         <li>Name: {{ student_info[1] }}</li>
         <li>Age: {{ student_info[2] }}</li>
         <li>Gender: {{ student_info[3] }}</li>
         <li>Status: {{ student_info[4] }}</li>
         <li>GPA: {{ student_info[5] }}</li>
-    </ul>
+      </ul>
+    {% else %}
+      <p>No student information available.</p>
+    {% endif %}
 
   </form>
 

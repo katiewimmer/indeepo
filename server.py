@@ -101,22 +101,29 @@ def filmmaker():
 
 
 @app.route('/student/', methods=['GET'])
-def get_student_info():
-    print("hello")
-    student_id = request.args.get['studentID']
-    student_info = fetch_student_info(student_id)
-    print(student_id)
-    if student_info:
-        return render_template('student.html', student_info=student_info)
-    else:
-        return "Student not found"
+def student():
+    print("in student")
+    print(request.args)
+    # Check if the form has been submitted
+    if 'studentID' in request.args:
+        student_id = request.args.get('studentID')
+        student_info = fetch_student_info(student_id)
+        print(student_id)
+        if student_info:
+            return render_template('student.html', student_info=student_info)
+        else:
+            return "Student not found"
+
+    # If the form has not been submitted, render the empty student.html
+    return render_template('student.html', student_info = None)
 
 def fetch_student_info(student_id):
-      
-      cursor = g.conn.execute(text("SELECT * FROM students WHERE studentID = :id"), id=student_id)
-      g.conn.commit()
-      student_info = cursor.fetchone()
-      return student_info
+    try:
+        cursor = g.conn.execute(text("SELECT * FROM student WHERE studentID = :id"), id=student_id)
+        student_info = cursor.fetchone()
+        return student_info
+    finally:
+        cursor.close()
 
 @app.route('/')
 def index():
