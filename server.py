@@ -13,6 +13,7 @@ import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, abort
+from datetime import datetime
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -145,10 +146,24 @@ def register_student():
         status = int(request.form.get('status'))
         gpa = float(request.form.get('gpa'))
 
+        schoolName = request.form.get('schoolName')
+        sinceDate = datetime.strptime(request.form.get('sinceDate'), '%Y-%m-%d')
+
+        # Check if the studentID already exists
+        if student_id_exists(studentID):
+            error_message = "Error: Student ID already in use. Please choose a different ID."
+            return render_template('student.html', error_message=error_message)
+
         # Insert the new student into the database
         g.conn.execute(
-            text("INSERT INTO student (StudentID, Name, Age, Gender, Status, GPA) VALUES (:name, :age, :gender, :status, :gpa)"),
-            studentID = studentID, name=name, age=age, gender=gender, status=status, gpa=gpa
+            text("INSERT INTO student (StudentID, Name, Age, Gender, Status, GPA) VALUES (:studentID, :name, :age, :gender, :status, :gpa)"),
+            studentID=studentID, name=name, age=age, gender=gender, status=status, gpa=gpa
+        )
+
+        # Insert school information into the Attends table
+        g.conn.execute(
+            text("INSERT INTO Attends (StudentID, SchoolID, Since) VALUES (:studentID, (SELECT SchoolID FROM School WHERE Name = :schoolName), :sinceDate)"),
+            studentID=studentID, schoolName=schoolName, sinceDate=sinceDate
         )
 
         # Redirect to the student view page with the newly registered studentID
@@ -156,9 +171,18 @@ def register_student():
         return redirect(f'/student/?studentID={new_student_id}')
 
     except Exception as e:
-        # Handle any exceptions that may occur during registration
-        print(f"Error during registration: {e}")
-        return "Error during registration"
+        # Handle any other exceptions that may occur during registration
+        error_message = f"An error occurred during registration: {str(e)}"
+        return render_template('student.html', error_message=error_message)
+    
+def student_id_exists(student_id):
+    try:
+        query = text("SELECT EXISTS(SELECT 1 FROM student WHERE studentID = :id)")
+        result = g.conn.execute(query, id=student_id).scalar()
+        return result
+    except Exception as e:
+        error_message = f"Error checking student ID existence: {str(e)}"
+        return False
 
 @app.route('/')
 def index():

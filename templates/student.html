@@ -12,7 +12,7 @@
      {% if student_not_found %}
      <p>Student not found. Check your StudentID and try again</p>
      {% endif %}
-     
+
      <h2>Student Information</h2>
      
       {% if student_info %}
@@ -62,9 +62,23 @@
             <label for="gpa">GPA:</label>
             <input type="number" step="0.01" id="gpa" name="gpa" required>
 
+            <!-- New fields for School Name and Since date -->
+            <p></p>
+            <label for="schoolName">School Name:</label>
+            <input type="text" id="schoolName" name="schoolName" required>
+
+            <label for="sinceDate">Attending Since:</label>
+            <input type="date" id="sinceDate" name="sinceDate" required>
+            <p></p>
             <input type="submit" value="Register">
         </form>
     </div>
+
+    {% if error_message %}
+    <p> Problem registering with given information:</p>
+    <p style="color: red;">{{ error_message }}</p>
+    {% endif %}
+
   </body>
 
 </html>
