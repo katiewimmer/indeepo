@@ -2,30 +2,69 @@
   <head>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}"> 
   </head>
-  <h1>Indeepo - STUDENT VIEW</h1>
+  <body>
+    <h1>Indeepo - STUDENT VIEW</h1>
 
-  <h2>Enter your student ID Number:</h2>
-    <form action="/student" method="GET">
-        <p>ID: <input type="text" name="studentID"> <input type="submit" value="Find" class="find-button"></p>
-    </form>
-    
-    <h2>Student Information</h2>
-    {% if student_info %}
+    <h2>Enter your student ID Number:</h2>
+     <form action="/student" method="GET">
+         <p>ID: <input type="text" name="studentID"> <input type="submit" value="Find" class="find-button"></p>
+     </form>
+     {% if student_not_found %}
+     <p>Student not found. Check your StudentID and try again</p>
+     {% endif %}
+     
+     <h2>Student Information</h2>
+     
+      {% if student_info %}
       <ul>
-        <li>Student ID: {{ student_info[0] }}</li>
+        <li style="color: red;">Student ID: {{ student_info[0] }}</li>
         <li>Name: {{ student_info[1] }}</li>
         <li>Age: {{ student_info[2] }}</li>
         <li>Gender: {{ student_info[3] }}</li>
         <li>Status: {{ student_info[4] }}</li>
         <li>GPA: {{ student_info[5] }}</li>
       </ul>
-    {% else %}
-      <p>No student information available.</p>
-    {% endif %}
+      {% else %}
+      <p>Not currently logined in as a student</p>
+      {% endif %}
+      <h2>School Information</h2>
+      {% if school_info %}
+      <ul>
+        <li>School Name: {{ school_info[1] }}</li>
+        <li>Location: {{ school_info[2] }}</li>
+        <li>Description: {{ school_info[3] }}</li>
+        <li>Attending Since: {{ school_info[4] }}</li>
+      </ul>
+      {% else %}
+      <p>No school information available.</p>
+      {% endif %}
+  
 
-  </form>
+       <div class="registration-form">
+        <h2>Register a New Student</h2>
+        <form action="/register" method="POST">
+            <h3>Student ID is a unique 8-digit number, please remember your ID number for future login!</h3>
+            <label for="studentID">Student ID:</label>
+            <input type="text" id="studentID" name="studentID" required>
+            <p></p>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
 
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" required>
 
-</body>
+            <label for="gender">Gender:</label>
+            <input type="text" id="gender" name="gender" required>
+
+            <label for="status">Status:</label>
+            <input type="number" id="status" name="status" required>
+
+            <label for="gpa">GPA:</label>
+            <input type="number" step="0.01" id="gpa" name="gpa" required>
+
+            <input type="submit" value="Register">
+        </form>
+    </div>
+  </body>
 
 </html>

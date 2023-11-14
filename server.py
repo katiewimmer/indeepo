@@ -8,7 +8,6 @@ Go to http://localhost:8111 in your browser.
 A debugger such as "pdb" may be helpful for debugging.
 Read about it online.
 """
-print("hello")
 import os
   # accessible as a variable in index.html:
 from sqlalchemy import *
@@ -18,7 +17,6 @@ from flask import Flask, request, render_template, g, redirect, Response, abort
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 
-print("hello")
 #
 # The following is a dummy URI that does not connect to a valid database. You will need to modify it to connect to your Part 2 database in order to use the data.
 #
@@ -36,7 +34,6 @@ DATABASEURI = "postgresql://krw2146:618771@34.74.171.121/proj1part2"
 # This line creates a database engine that knows how to connect to the URI above.
 #
 engine = create_engine(DATABASEURI)
-print("hello")
 #
 # Example of running queries in your database
 # Note that this will probably not work if you already have a table named 'test' in your database, containing meaningful data. This is only an example showing you how to run queries in your database using SQLAlchemy.
@@ -102,17 +99,17 @@ def filmmaker():
 
 @app.route('/student/', methods=['GET'])
 def student():
-    print("in student")
     print(request.args)
     # Check if the form has been submitted
     if 'studentID' in request.args:
         student_id = request.args.get('studentID')
         student_info = fetch_student_info(student_id)
-        print(student_id)
+        school_info = fetch_school_info(student_id)
+
         if student_info:
-            return render_template('student.html', student_info=student_info)
+            return render_template('student.html', student_info=student_info,school_info=school_info)
         else:
-            return "Student not found"
+            return render_template('student.html', student_not_found=True)
 
     # If the form has not been submitted, render the empty student.html
     return render_template('student.html', student_info = None)
@@ -124,6 +121,44 @@ def fetch_student_info(student_id):
         return student_info
     finally:
         cursor.close()
+def fetch_school_info(student_id):
+    try:
+        query = """
+            SELECT School.SchoolID, School.Name, School.Location, School.Description, Attends.Since
+            FROM School
+            JOIN Attends ON School.SchoolID = Attends.SchoolID
+            WHERE Attends.StudentID = :id
+        """
+        cursor = g.conn.execute(text(query), id=student_id)
+        school_info = cursor.fetchone()
+        return school_info
+    finally:
+        cursor.close()
+
+@app.route('/register', methods=['POST'])
+def register_student():
+    try:
+        studentID = request.form.get('studentID')
+        name = request.form.get('name')
+        age = int(request.form.get('age'))
+        gender = request.form.get('gender')
+        status = int(request.form.get('status'))
+        gpa = float(request.form.get('gpa'))
+
+        # Insert the new student into the database
+        g.conn.execute(
+            text("INSERT INTO student (StudentID, Name, Age, Gender, Status, GPA) VALUES (:name, :age, :gender, :status, :gpa)"),
+            studentID = studentID, name=name, age=age, gender=gender, status=status, gpa=gpa
+        )
+
+        # Redirect to the student view page with the newly registered studentID
+        new_student_id = g.conn.execute(text("SELECT MAX(studentID) FROM student")).scalar()
+        return redirect(f'/student/?studentID={new_student_id}')
+
+    except Exception as e:
+        # Handle any exceptions that may occur during registration
+        print(f"Error during registration: {e}")
+        return "Error during registration"
 
 @app.route('/')
 def index():
