@@ -106,9 +106,10 @@ def student():
         student_id = request.args.get('studentID')
         student_info = fetch_student_info(student_id)
         school_info = fetch_school_info(student_id)
+        roles_info = fetch_roles_info(student_id)
 
         if student_info:
-            return render_template('student.html', student_info=student_info,school_info=school_info)
+            return render_template('student.html', student_info=student_info,school_info=school_info, roles_info=roles_info)
         else:
             return render_template('student.html', student_not_found=True)
 
@@ -133,6 +134,22 @@ def fetch_school_info(student_id):
         cursor = g.conn.execute(text(query), id=student_id)
         school_info = cursor.fetchone()
         return school_info
+    finally:
+        cursor.close()
+def fetch_roles_info(student_id):
+    try:
+        query = """
+            SELECT Role.RoleID, Role.Description, Role.Level, Role.Status, Role.Begin, Role.Finish,
+                   Film.Title
+            FROM Part_Of
+            JOIN Role ON Part_Of.RoleID = Role.RoleID
+            JOIN Needs ON Role.RoleID = Needs.RoleID
+            JOIN Film ON Needs.FilmID = Film.FilmID
+            WHERE Part_Of.StudentID = :id
+        """
+        cursor = g.conn.execute(text(query), id=student_id)
+        roles_info = cursor.fetchall()
+        return roles_info
     finally:
         cursor.close()
 
