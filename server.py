@@ -104,7 +104,7 @@ def student():
         roles_info = fetch_roles_info(student_id)
 
         if student_info:
-            return render_template('student.html', student_info=student_info,school_info=school_info, roles_info=roles_info)
+            return render_template('student.html', student_info=student_info, school_info=school_info, roles_info=roles_info)
         else:
             return render_template('student.html', student_not_found=True)
 
@@ -119,6 +119,7 @@ def fetch_student_info(student_id):
     finally:
         cursor.close()
 def fetch_school_info(student_id):
+    print("in fetch school")
     try:
         query = """
             SELECT School.SchoolID, School.Name, School.Location, School.Description, Attends.Since
@@ -263,10 +264,8 @@ def index():
   See its API: https://flask.palletsprojects.com/en/2.0.x/api/?highlight=incoming%20request%20data
 
   """
-  print("in index")
   # DEBUG: this is debugging code to see what request looks like
   print(request.args)
-
 
   #
   # example of a database query 

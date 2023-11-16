@@ -30,18 +30,16 @@ button {
 }
 
 .registration-form {
-    position: relative;
+    position: absolute;
+    top: 20px;
+    right: 20px;
     width: 50%; /* Set the initial width to half of the page */
-    max-width: 400px; /* Set the maximum width to limit how much it can exceed */
     background-color: #f1f1f1;
     padding: 20px;
     border-radius: 5px;
 }
 
 .roles-container {
-    position: absolute;
-    top: 20px;
-    right: 20px;
     background-color: #add8e6;
     padding: 10px;
     border-radius: 5px;
