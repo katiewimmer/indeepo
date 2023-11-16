@@ -87,11 +87,6 @@ def teardown_request(exception):
 # see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
 #
 
-@app.route('/school/')
-def school():
-    # Your school route logic here
-    return render_template('school.html')
-
 @app.route('/filmmaker/')
 def filmmaker():
     # Your filmmaker route logic here
@@ -200,6 +195,61 @@ def student_id_exists(student_id):
     except Exception as e:
         error_message = f"Error checking student ID existence: {str(e)}"
         return False
+
+@app.route('/school', methods=['GET'])
+def school():
+    school_id = request.args.get('schoolID')
+
+    # Get school information
+    school_info = fetch_school_info(school_id)
+    students_info = fetch_students_attending_school(school_id)
+    films_info = fetch_films_by_school(school_id)
+
+    if school_info:
+        return render_template('school.html', school_info=school_info, students_info=students_info, films_info=films_info, school_not_found=False)
+    else:
+        return render_template('school.html', school_info=None, school_not_found=True)
+
+def fetch_school_info(school_id):
+    try:
+        query = """
+            SELECT School.SchoolID, School.Name, School.Location, School.Description, Attends.Since
+            FROM School
+            JOIN Attends ON School.SchoolID = Attends.SchoolID
+            WHERE Attends.SchoolID = :id
+        """
+        cursor = g.conn.execute(text(query), id=school_id)
+        school_info = cursor.fetchone()
+        return school_info
+    finally:
+        cursor.close()
+def fetch_students_attending_school(school_id):
+    try:
+        query = """
+            SELECT Student.StudentID, Student.Name, Student.Age, Student.Gender, Student.Status, Student.GPA
+            FROM Student
+            JOIN Attends ON Student.StudentID = Attends.StudentID
+            WHERE Attends.SchoolID = :id
+        """
+        cursor = g.conn.execute(text(query), id=school_id)
+        students_info = cursor.fetchall()
+        return students_info
+    finally:
+        cursor.close()
+
+def fetch_films_by_school(school_id):
+    try:
+        query = """
+            SELECT Film.FilmID, Film.Title, Film.Year, Film.Genre, Film.Description, Film.Stage_of_production, Film.Budget
+            FROM Film
+            WHERE Film.SchoolID = :id
+            ORDER BY Film.Year DESC
+        """
+        cursor = g.conn.execute(text(query), id=school_id)
+        films_info = cursor.fetchall()
+        return films_info
+    finally:
+        cursor.close()
 
 @app.route('/')
 def index():

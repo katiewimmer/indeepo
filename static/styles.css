@@ -57,3 +57,22 @@ button {
 .role-details {
     margin-left: 10px;
 }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+}
+
+/* Allow the description to span multiple lines */
+td.description {
+    white-space: pre-line;
+}

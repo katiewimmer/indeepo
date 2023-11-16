@@ -1,1 +1,88 @@
-Welcome to being a school
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}"> 
+  </head>
+  <body>
+    <h1>Indeepo - SCHOOL VIEW</h1>
+
+    <h2>Enter your school ID Number:</h2>
+    <form action="/school" method="GET">
+        <p>ID: <input type="text" name="schoolID"> <input type="submit" value="Find" class="find-button"></p>
+    </form>
+
+    {% if school_not_found and request.args.get('schoolID') %}
+        <p>School not found. Check your School ID and try again</p>
+    {% endif %}
+
+    <h2>School Information</h2>
+    {% if school_info %}
+        <ul>
+            <li style="color: red;">School ID: {{ school_info[0] }}</li>
+            <li>Name: {{ school_info[1] }}</li>
+            <li>Location: {{ school_info[2] }}</li>
+            <li>Description: {{ school_info[3] }}</li>
+            <li>Attending Since: {{ school_info[4] }}</li>
+        </ul>
+    {% else %}
+        <p>No school information available.</p>
+    {% endif %}
+    
+    <h2>Students Attending the School</h2>
+    {% if students_info %}
+        <ul>
+            {% for student in students_info %}
+                <li>
+                    <strong>Student ID:</strong> {{ student[0] }}<br>
+                    <span><strong>Name:</strong> {{ student[1] }}</span><br>
+                    <span><strong>Age:</strong> {{ student[2] }}</span><br>
+                    <span><strong>Gender:</strong> {{ student[3] }}</span><br>
+                    <span><strong>Status:</strong> {{ student[4] }}</span><br>
+                    <span><strong>GPA:</strong> {{ student[5] }}</span><br>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No students attending the school.</p>
+    {% endif %}
+
+    <h2>Films Produced by School</h2>
+    {% if films_info %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Film ID</th>
+                    <th>Title</th>
+                    <th>Year</th>
+                    <th>Genre</th>
+                    <th>Description</th>
+                    <th>Stage of Production</th>
+                    <th>Budget</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for film in films_info %}
+                    <tr>
+                        <td>{{ film[0] }}</td>
+                        <td>{{ film[1] }}</td>
+                        <td>{{ film[2] }}</td>
+                        <td>{{ film[3] }}</td>
+                        <td class="description">{{ film[4] }}</td>
+                        <td>
+                            {% if film[5] == 2 %}
+                                Made
+                            {% elif film[5] == 1 %}
+                                Being Made
+                            {% else %}
+                                Planning
+                            {% endif %}
+                        </td>
+                        <td>{{ film[6] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No films produced by the school.</p>
+    {% endif %}
+  </body>
+</html>
