@@ -14,6 +14,7 @@ from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, abort
 from datetime import datetime
+import re
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -98,7 +99,7 @@ def student():
     print(request.args)
     # Check if the form has been submitted
     if 'studentID' in request.args:
-        student_id = request.args.get('studentID')
+        student_id = request.args.get('studentID', '').lower()
         student_info = fetch_student_info(student_id)
         school_info = fetch_school_info(student_id)
         roles_info = fetch_roles_info(student_id)
@@ -202,7 +203,7 @@ def school():
     school_id = request.args.get('schoolID')
 
     # Get school information
-    school_info = fetch_school_info(school_id)
+    school_info = fetch_school_info2(school_id)
     students_info = fetch_students_attending_school(school_id)
     films_info = fetch_films_by_school(school_id)
 
@@ -211,19 +212,19 @@ def school():
     else:
         return render_template('school.html', school_info=None, school_not_found=True)
 
-def fetch_school_info(school_id):
+def fetch_school_info2(school_id):
     try:
         query = """
-            SELECT School.SchoolID, School.Name, School.Location, School.Description, Attends.Since
+            SELECT SchoolID, Name, Location, Description
             FROM School
-            JOIN Attends ON School.SchoolID = Attends.SchoolID
-            WHERE Attends.SchoolID = :id
+            WHERE SchoolID = :id
         """
         cursor = g.conn.execute(text(query), id=school_id)
         school_info = cursor.fetchone()
         return school_info
     finally:
         cursor.close()
+
 def fetch_students_attending_school(school_id):
     try:
         query = """
@@ -251,7 +252,47 @@ def fetch_films_by_school(school_id):
         return films_info
     finally:
         cursor.close()
+@app.route('/register_school', methods=['POST'])
+def register_school():
+    try:
+        school_id = request.form.get('schoolID')
+        name = request.form.get('name')
+        location = request.form.get('location')
+        description = request.form.get('description')
 
+        # Validate school_id format
+        if not re.match(r'^1\d{7}$', school_id):
+            error_message = "Error: School ID must be an 8-digit number starting with 1."
+            return render_template('school.html', error_message=error_message, school_info=None, school_not_found=True)
+
+        # Check if the schoolID already exists
+        if school_id_exists(school_id):
+            error_message = "Error: School ID already in use. Please choose a different ID."
+            return render_template('school.html', error_message=error_message, school_info=None, school_not_found=True)
+
+        # Insert the new school into the database
+        g.conn.execute(
+            text("INSERT INTO School (SchoolID, Name, Location, Description) VALUES (:schoolID, :name, :location, :description)"),
+            schoolID=school_id, name=name, location=location, description=description
+        )
+
+        # Redirect to the school view page with the newly registered schoolID
+        return redirect(f'/school/?schoolID={school_id}')
+
+    except Exception as e:
+        # Handle any other exceptions that may occur during registration
+        error_message = f"An error occurred during registration: {str(e)}"
+        return render_template('school.html', error_message=error_message, school_info=None, school_not_found=True)
+    
+def school_id_exists(school_id):
+    try:
+        query = text("SELECT EXISTS(SELECT 1 FROM School WHERE SchoolID = :schoolID)")
+        result = g.conn.execute(query, schoolID=school_id).scalar()
+        return result
+    except Exception as e:
+        error_message = f"Error checking school ID existence: {str(e)}"
+        return False
+    
 @app.route('/')
 def index():
   """

@@ -23,7 +23,6 @@
         <li>Name: {{ school_info[1] }}</li>
         <li>Location: {{ school_info[2] }}</li>
         <li>Description: {{ school_info[3] }}</li>
-        <li>Attending Since: {{ school_info[4] }}</li>
     </ul>
     {% else %}
     <p>No school information available.</p>
@@ -98,6 +97,27 @@
     {% else %}
     <p>No films produced by the school.</p>
     {% endif %}
+
+    <form action="/register_school" method="POST" class="registration-form">
+        <h2>Register a New School</h2>
+        <h4>School ID is a unique 8-digit number beginning with a 1 (ex. 1xxxxxxx) <p></p>
+            Please remember your ID number for future login!</h4>
+        <p>
+            School ID: <input type="text" name="schoolID" required>
+            Name: <input type="text" name="name" required>
+        </p>
+        <p>
+            Location: <input type="text" name="location" required>
+            Description: <input type="text" name="description" required>
+        </p>
+        <p>
+            <input type="submit" value="Register School">
+        </p>
+        {% if error_message %}
+        <p>Problem registering with given information:</p>
+        <p style="color: red;">{{ error_message }}</p>
+        {% endif %}
+    </form>
 </body>
 
 </html>

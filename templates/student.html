@@ -61,7 +61,7 @@
        <div class="registration-form">
         <h2>Register a New Student</h2>
         <form action="/register" method="POST">
-            <h3>Student ID is a unique 8-digit number, please remember your ID number for future login!</h3>
+            <h4>Student ID is a unique 7-digit number, please remember your ID number for future login!</h4>
             <label for="studentID">Student ID:</label>
             <input type="text" id="studentID" name="studentID" required>
             <p></p>
@@ -73,7 +73,7 @@
 
             <label for="gender">Gender:</label>
             <input type="text" id="gender" name="gender" required>
-
+            <p></p>
             <label for="status">Status:</label>
             <input type="number" id="status" name="status" required>
 
@@ -88,15 +88,14 @@
             <label for="sinceDate">Attending Since:</label>
             <input type="date" id="sinceDate" name="sinceDate" required>
             <p></p>
-            <input type="submit" value="Register">
+            <input type="submit" value="Register Student">
+            {% if error_message %}
+            <p> Problem registering with given information:</p>
+            <p style="color: red;">{{ error_message }}</p>
+            {% endif %}
         </form>
     </div>
 
-    {% if error_message %}
-    <p> Problem registering with given information:</p>
-    <p style="color: red;">{{ error_message }}</p>
-
-    {% endif %}
 
   </body>
 
