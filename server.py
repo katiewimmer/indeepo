@@ -292,6 +292,100 @@ def school_id_exists(school_id):
     except Exception as e:
         error_message = f"Error checking school ID existence: {str(e)}"
         return False
+
+@app.route('/film', methods=['GET'])
+def film():
+    film_id = request.args.get('filmID')
+
+    # Get film information
+    film_info = fetch_film_info(film_id)
+    school_info = fetch_school_info_by_film(film_id)
+
+    if film_info:
+        return render_template('filmmaker.html', film_info=film_info, school_info=school_info, film_not_found=False)
+    else:
+        return render_template('filmmaker.html', film_info=None, school_info=None, film_not_found=True)
+
+def fetch_film_info(film_id):
+    try:
+        query = """
+            SELECT FilmID, Title, Year, Genre, Description, Stage_of_production, Budget
+            FROM Film
+            WHERE FilmID = :id
+        """
+        cursor = g.conn.execute(text(query), id=film_id)
+        film_info = cursor.fetchone()
+        return film_info
+    finally:
+        cursor.close()
+
+
+def fetch_school_info_by_film(film_id):
+    try:
+        query = """
+            SELECT School.Name, School.Location
+            FROM School
+            JOIN Film ON School.SchoolID = Film.SchoolID
+            WHERE Film.FilmID = :id
+        """
+        cursor = g.conn.execute(text(query), id=film_id)
+        school_info = cursor.fetchone()
+        return school_info
+    finally:
+        cursor.close()
+
+@app.route('/register_film', methods=['POST'])
+def register_film():
+    try:
+        film_id = request.form.get('filmID')
+        title = request.form.get('title')
+        year = request.form.get('year')
+        genre = request.form.get('genre')
+        description = request.form.get('description')
+        stage_of_production = request.form.get('stageOfProduction')
+        budget = request.form.get('budget')
+        school_id = request.form.get('schoolID')
+
+        # Validate school_id format
+        if not re.match(r'^2\d{7}$', film_id):
+            error_message = "Error: Film ID must be an 8-digit number starting with 2."
+            return render_template('fiilmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
+
+
+        # Validate film_id format
+        if not film_id or not film_id.isdigit():
+            error_message = "Error: Film ID must be a valid number."
+            return render_template('filmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
+
+        # Check if the filmID already exists
+        if film_id_exists(film_id):
+            error_message = "Error: Film ID already in use. Please choose a different ID."
+            return render_template('filmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
+
+        # Insert the new film into the database
+        g.conn.execute(
+            text("INSERT INTO Film (FilmID, Title, Year, Genre, Description, Stage_of_production, Budget, SchoolID) " +
+                 "VALUES (:filmID, :title, :year, :genre, :description, :stage_of_production, :budget, :schoolID)"),
+            filmID=film_id, title=title, year=year, genre=genre,
+            description=description, stage_of_production=stage_of_production, budget=budget, schoolID=school_id
+        )
+
+        # Redirect to the filmmaker view page with the newly registered filmID
+        return redirect(f'/film/?filmID={film_id}')
+
+    except Exception as e:
+        # Handle any other exceptions that may occur during registration
+        error_message = f"An error occurred during registration: {str(e)}"
+        return render_template('filmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
+
+def film_id_exists(film_id):
+    try:
+        query = text("SELECT EXISTS(SELECT 1 FROM Film WHERE FilmID = :filmID)")
+        result = g.conn.execute(query, filmID=film_id).scalar()
+        return result
+    except Exception as e:
+        error_message = f"Error checking film ID existence: {str(e)}"
+        return False
     
 @app.route('/')
 def index():
