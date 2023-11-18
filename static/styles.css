@@ -74,3 +74,8 @@ th, td {
 td.description {
     white-space: pre-line;
 }
+
+.roles-section {
+    display: flex;
+    align-items: center;
+  }
