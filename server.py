@@ -519,7 +519,80 @@ def film_id_exists(film_id):
     except Exception as e:
         error_message = f"Error checking film ID existence: {str(e)}"
         return False
-    
+
+@app.route('/add_role', methods=['POST'])
+def add_role():
+    try:
+        role_id = request.form.get('roleID')  # Assuming the role ID is part of the form
+
+        # Validate role_id format
+        if not re.match(r'^3\d{7}$', role_id):
+            error_message = "Error: Role ID must be an 8-digit number starting with 3."
+            return render_template('filmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
+
+        role_type = request.form.get('roleType')
+        description = request.form.get('description')
+        level = int(request.form.get('level'))
+
+        # Additional fields based on role type
+        if role_type == 'Director':
+            salary = float(request.form.get('salary'))
+        elif role_type == 'Actor':
+            age = int(request.form.get('age'))
+            gender = request.form.get('gender')
+            line_count = int(request.form.get('lineCount'))
+            pay = float(request.form.get('pay'))
+        elif role_type == 'Producer':
+            producer_type = request.form.get('producerType')
+            in_guild = int(request.form.get('inGuild'))
+            percent_stake = float(request.form.get('percentStake'))
+        elif role_type == 'Crew':
+            hourly_rate = float(request.form.get('hourlyRate'))
+
+        # Insert the role into the Role table
+        g.conn.execute(
+            text("INSERT INTO Role (RoleID, Description, Level) VALUES (:role_id, :description, :level)"),
+            role_id=role_id, description=description, level=level
+        )
+
+        # Insert role-specific details into the appropriate table
+        if role_type == 'Director':
+            g.conn.execute(
+                text("INSERT INTO Director (RoleID, Salary) VALUES (:role_id, :salary)"),
+                role_id=role_id, salary=salary
+            )
+        elif role_type == 'Actor':
+            g.conn.execute(
+                text("INSERT INTO Actor (RoleID, Age, Gender, Line_Count, Pay) VALUES (:role_id, :age, :gender, :line_count, :pay)"),
+                role_id=role_id, age=age, gender=gender, line_count=line_count, pay=pay
+            )
+        elif role_type == 'Producer':
+            g.conn.execute(
+                text("INSERT INTO Producer (RoleID, Type, In_Guild, Percent_Stake) VALUES (:role_id, :producer_type, :in_guild, :percent_stake)"),
+                role_id=role_id, producer_type=producer_type, in_guild=in_guild, percent_stake=percent_stake
+            )
+        elif role_type == 'Crew':
+            g.conn.execute(
+                text("INSERT INTO Crew (RoleID, Hourly_Rate) VALUES (:role_id, :hourly_rate)"),
+                role_id=role_id, hourly_rate=hourly_rate
+            )
+
+        # Add the role to the Needs table for the current film (replace 123 with the actual FilmID)
+        film_id = request.form.get('filmID')  # Assuming the film ID is part of the form
+        g.conn.execute(
+            text("INSERT INTO Needs (RoleID, FilmID, Posted) VALUES (:role_id, :film_id, :posted)"),
+            role_id=role_id, film_id=film_id, posted=datetime.utcnow()
+        )
+
+        return redirect(url_for('film', filmID=film_id))  # Redirect to the film page after adding the role
+
+    except IntegrityError as e:
+        # Handle the case where there was an integrity error (e.g., duplicate key violation)
+        # Rollback the transaction and display an error message
+        g.conn.execute(text("ROLLBACK"))
+        error_message = f"An error occurred while adding the role: {str(e)}"
+        return render_template('filmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
+
 @app.route('/')
 def index():
   """

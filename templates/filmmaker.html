@@ -23,7 +23,7 @@
         <li>Title: {{ film_info[1] }}</li>
         <li>Year: {{ film_info[2] }}</li>
         <li>Genre: {{ film_info[3] }}</li>
-        <li>Description: {{ film_info[4] }}</li>
+        <li style="max-width: 40%;">Description: {{ film_info[4] }}</li>
         <li>Stage of Production:
             {% if film_info[5] == 0 %}
             Planning
@@ -116,6 +116,13 @@
     <h2>Add Roles to the film</h2>
     <div class="role-addition-form">
         <form action="/add_role" method="POST">
+            
+            <input type="hidden" id="filmID" name="filmID" value="{{ film_info[0] }}">
+            
+            <h3>Role ID must be a unique 8-digit number that starts with a 3 (ex. 3xxxxxxx)</h3>
+            <label for="roleID">Role ID:</label>
+            <input type="text" id="roleID" name="roleID" required>
+            <p></p>
             <label for="roleType">Role Type:</label>
                 <select id="roleType" name="roleType" required>
                     <option value="" disabled selected>Select Role Type</option>
@@ -171,6 +178,11 @@
             </div>
             <p></p>
             <input type="submit" value="Add Role">
+
+            {% if error_message %}
+            <p>Problem registering with given information:</p>
+            <p style="color: red;">{{ error_message }}</p>
+            {% endif %}
         </form>
     </div>
 
