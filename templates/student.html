@@ -1,111 +1,118 @@
 <html>
-  <head>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}"> 
-  </head>
-  <body>
-    <h1>Indeepo - STUDENT VIEW</h1>
 
-    <h2>Enter your student ID Number:</h2>
-     <form action="/student" method="GET">
-         <p>ID: <input type="text" name="studentID"> <input type="submit" value="Find" class="find-button"></p>
-     </form>
-     {% if student_not_found %}
-     <p>Student not found. Check your StudentID and try again</p>
-     {% endif %}
-     {% if student_info %}
-    <div class="roles-section">
+<head>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+  <h1>Indeepo - STUDENT VIEW</h1>
+
+  <h2>Enter your student ID Number:</h2>
+  <form action="/student" method="GET">
+    <p>ID: <input type="text" name="studentID"> <input type="submit" value="Find" class="find-button"></p>
+  </form>
+  {% if student_not_found %}
+  <p>Student not found. Check your StudentID and try again</p>
+  {% endif %}
+  {% if student_info %}
+  <div class="roles-section">
     <h2>Find a Role:</h2>
     <a href="{{ url_for('roles') }}" class="button">
-      <button type="button">All Roles</button>
+      <button type="button">Find a Role</button>
     </a>
-    </div>
-    {% endif %}
-     <h2>Student Information</h2>
-     
-      {% if student_info %}
-      </form>
-      <ul>
-        <li style="color: red;">Student ID: {{ student_info[0] }}</li>
-        <li>Name: {{ student_info[1] }}</li>
-        <li>Age: {{ student_info[2] }}</li>
-        <li>Gender: {{ student_info[3] }}</li>
-        <li>Status: {{ student_info[4] }}</li>
-        <li>GPA: {{ student_info[5] }}</li>
-      </ul>
-      {% else %}
-      <p>Not currently logined in as a student</p>
+  </div>
+  {% endif %}
+  <h2>Student Information</h2>
+
+  {% if student_info %}
+  </form>
+  <ul>
+    <li style="color: red;">Student ID: {{ student_info[0] }}</li>
+    <li>Name: {{ student_info[1] }}</li>
+    <li>Age: {{ student_info[2] }}</li>
+    <li>Gender: {{ student_info[3] }}</li>
+    <li>Status: {{ student_info[4] }}</li>
+    <li>GPA: {{ student_info[5] }}</li>
+  </ul>
+  {% else %}
+  <p>Not currently logined in as a student</p>
+  {% endif %}
+  <h2>School Information</h2>
+  {% if school_info %}
+  <ul>
+    <li>School Name: {{ school_info[1] }}</li>
+    <li>Location: {{ school_info[2] }}</li>
+    <li>Description: {{ school_info[3] }}</li>
+    <li>Attending Since: {{ school_info[4] }}</li>
+  </ul>
+  {% else %}
+  <p>No school information available.</p>
+  {% endif %}
+  <h2>Roles Information</h2>
+  {% if roles_info %}
+  <div class="roles-container">
+    <p>Roles you have been a part of:</p>
+    <ul class="roles-list">
+      {% for role in roles_info %}
+      <li class="role-item">
+        <span class="role-details"><strong>Film:</strong> {{ role[6] }}</span><br>
+        <span class="role-details"><strong>Description:</strong> {{ role[1] }}</span><br>
+        <span class="role-details"><strong>Level:</strong> {{ role[2] }}</span><br>
+        <span class="role-details"><strong>Begin:</strong> {{ role[4] }}</span><br>
+        <span class="role-details"><strong>Finish:</strong> {{ role[5] }}</span><br>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% else %}
+  <p>You have not been a part of any past roles</p>
+  {% endif %}
+
+  <div class="registration-form">
+    <h2>Register a New Student</h2>
+    <form action="/register" method="POST">
+      <h4>Student ID is a unique 7-digit number, please remember your ID number for future login!</h4>
+      <label for="studentID">Student ID:</label>
+      <input type="text" id="studentID" name="studentID" required>
+      <p></p>
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="age">Age:</label>
+      <input type="number" id="age" name="age" required>
+
+      <label for="gender">Gender:</label>
+      <input type="text" id="gender" name="gender" required>
+      <p></p>
+      <label for="status">Status:</label>
+      <input type="number" id="status" name="status" required>
+
+      <label for="gpa">GPA:</label>
+      <input type="number" step="0.01" id="gpa" name="gpa" required>
+
+      <!-- New fields for School Name and Since date -->
+      <p></p>
+      <label for="schoolSelect">School:</label>
+        <select id="schoolSelect" name="schoolSelect" required>
+          {% for school in all_schools %}
+          <option value="{{ school[0] }}">{{ school[1] }}</option>
+          {% endfor %}
+        </select>
+
+      <label for="sinceDate">Attending Since:</label>
+      <input type="date" id="sinceDate" name="sinceDate" required>
+      <p></p>
+      <input type="submit" value="Register Student">
+      {% if error_message %}
+      <p> Problem registering with given information:</p>
+      <p style="color: red;">{{ error_message }}</p>
       {% endif %}
-      <h2>School Information</h2>
-      {% if school_info %}
-      <ul>
-        <li>School Name: {{ school_info[1] }}</li>
-        <li>Location: {{ school_info[2] }}</li>
-        <li>Description: {{ school_info[3] }}</li>
-        <li>Attending Since: {{ school_info[4] }}</li>
-      </ul>
-      {% else %}
-      <p>No school information available.</p>
-      {% endif %}
-      <h2>Roles Information</h2>
-      {% if roles_info %}
-        <div class="roles-container">
-          <p>Roles you have been a part of:</p>
-          <ul class="roles-list">
-            {% for role in roles_info %}
-                <li class="role-item">
-                    <span class="role-details"><strong>Film:</strong> {{ role[6] }}</span><br>
-                    <span class="role-details"><strong>Description:</strong> {{ role[1] }}</span><br>
-                    <span class="role-details"><strong>Level:</strong> {{ role[2] }}</span><br>
-                    <span class="role-details"><strong>Begin:</strong> {{ role[4] }}</span><br>
-                    <span class="role-details"><strong>Finish:</strong> {{ role[5] }}</span><br>
-                </li>
-            {% endfor %}
-          </ul>
-        </div>
-      {% else %}
-        <p>You have not been a part of any past roles</p>
-      {% endif %}   
+    </form>
 
-       <div class="registration-form">
-        <h2>Register a New Student</h2>
-        <form action="/register" method="POST">
-            <h4>Student ID is a unique 7-digit number, please remember your ID number for future login!</h4>
-            <label for="studentID">Student ID:</label>
-            <input type="text" id="studentID" name="studentID" required>
-            <p></p>
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
-
-            <label for="age">Age:</label>
-            <input type="number" id="age" name="age" required>
-
-            <label for="gender">Gender:</label>
-            <input type="text" id="gender" name="gender" required>
-            <p></p>
-            <label for="status">Status:</label>
-            <input type="number" id="status" name="status" required>
-
-            <label for="gpa">GPA:</label>
-            <input type="number" step="0.01" id="gpa" name="gpa" required>
-
-            <!-- New fields for School Name and Since date -->
-            <p></p>
-            <label for="schoolName">School Name:</label>
-            <input type="text" id="schoolName" name="schoolName" required>
-
-            <label for="sinceDate">Attending Since:</label>
-            <input type="date" id="sinceDate" name="sinceDate" required>
-            <p></p>
-            <input type="submit" value="Register Student">
-            {% if error_message %}
-            <p> Problem registering with given information:</p>
-            <p style="color: red;">{{ error_message }}</p>
-            {% endif %}
-        </form>
-    </div>
-    
+  </div>
 
 
-  </body>
+
+</body>
 
 </html>

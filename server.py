@@ -15,6 +15,7 @@ from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, session, g, redirect, Response, abort, url_for
 from datetime import datetime
 import re
+from sqlalchemy.exc import IntegrityError
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -96,7 +97,8 @@ def filmmaker():
 
 @app.route('/student/', methods=['GET'])
 def student():
-    print(request.args)
+
+    all_schools = fetch_all_schools()
     # Check if the form has been submitted
     if 'studentID' in request.args:
         student_id = request.args.get('studentID', '').lower()
@@ -105,9 +107,9 @@ def student():
         roles_info = fetch_roles_info(student_id)
 
         if student_info:
-            return render_template('student.html', student_info=student_info, school_info=school_info, roles_info=roles_info)
+            return render_template('student.html', student_info=student_info, all_schools=all_schools, school_info=school_info, roles_info=roles_info)
         else:
-            return render_template('student.html', student_not_found=True)
+            return render_template('student.html', student_not_found=True, all_schools=all_schools)
 
     # If the form has not been submitted, render the empty student.html
     return render_template('student.html', student_info = None)
@@ -120,7 +122,6 @@ def fetch_student_info(student_id):
     finally:
         cursor.close()
 def fetch_school_info(student_id):
-    print("in fetch school")
     try:
         query = """
             SELECT School.SchoolID, School.Name, School.Location, School.Description, Attends.Since
@@ -160,7 +161,7 @@ def register_student():
         status = int(request.form.get('status'))
         gpa = float(request.form.get('gpa'))
 
-        schoolName = request.form.get('schoolName')
+        school_id = request.form.get('schoolSelect')
         sinceDate = datetime.strptime(request.form.get('sinceDate'), '%Y-%m-%d')
 
         # Check if the studentID already exists
@@ -168,21 +169,31 @@ def register_student():
             error_message = "Error: Student ID already in use. Please choose a different ID."
             return render_template('student.html', error_message=error_message)
 
-        # Insert the new student into the database
-        g.conn.execute(
-            text("INSERT INTO student (StudentID, Name, Age, Gender, Status, GPA) VALUES (:studentID, :name, :age, :gender, :status, :gpa)"),
+        # Insert the new student into the database and return the studentID
+        result = g.conn.execute(
+            text("INSERT INTO student (StudentID, Name, Age, Gender, Status, GPA) VALUES (:studentID, :name, :age, :gender, :status, :gpa) RETURNING StudentID"),
             studentID=studentID, name=name, age=age, gender=gender, status=status, gpa=gpa
         )
+        new_student_id = result.fetchone()[0]
 
         # Insert school information into the Attends table
-        g.conn.execute(
-            text("INSERT INTO Attends (StudentID, SchoolID, Since) VALUES (:studentID, (SELECT SchoolID FROM School WHERE Name = :schoolName), :sinceDate)"),
-            studentID=studentID, schoolName=schoolName, sinceDate=sinceDate
-        )
+        try:
+            g.conn.execute(
+                text("INSERT INTO Attends (StudentID, SchoolID, Since) VALUES (:studentID, :schoolID, :sinceDate)"),
+                studentID=new_student_id, schoolID=school_id, sinceDate=sinceDate
+            )
+
+        except IntegrityError as e:
+            # Handle the case where there was an integrity error (e.g., duplicate key violation)
+            # Rollback the transaction and delete the student
+            g.conn.execute(text("DELETE FROM student WHERE StudentID = :studentID"), studentID=new_student_id)
+
+            error_message = f"An error occurred during registration: {str(e)}"
+            return render_template('student.html', error_message=error_message)
 
         # Redirect to the student view page with the newly registered studentID
-        new_student_id = g.conn.execute(text("SELECT MAX(studentID) FROM student")).scalar()
-        return redirect(f'/student/?studentID={new_student_id}')
+        new_student_id = studentID
+        return redirect(url_for('student', studentID=new_student_id))
 
     except Exception as e:
         # Handle any other exceptions that may occur during registration
@@ -382,7 +393,7 @@ def register_school():
         )
 
         # Redirect to the school view page with the newly registered schoolID
-        return redirect(f'/school/?schoolID={school_id}')
+        return redirect(url_for('school', school_id=school_id))
 
     except Exception as e:
         # Handle any other exceptions that may occur during registration
