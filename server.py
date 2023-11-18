@@ -12,7 +12,7 @@ import os
   # accessible as a variable in index.html:
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response, abort
+from flask import Flask, request, render_template, session, g, redirect, Response, abort
 from datetime import datetime
 import re
 
@@ -114,7 +114,7 @@ def student():
 
 def fetch_student_info(student_id):
     try:
-        cursor = g.conn.execute(text("SELECT * FROM student WHERE studentID = :id"), id=student_id)
+        cursor = g.conn.execute(text("SELECT * FROM student WHERE studentID = :id"), {'id':student_id})
         student_info = cursor.fetchone()
         return student_info
     finally:
@@ -128,7 +128,7 @@ def fetch_school_info(student_id):
             JOIN Attends ON School.SchoolID = Attends.SchoolID
             WHERE Attends.StudentID = :id
         """
-        cursor = g.conn.execute(text(query), id=student_id)
+        cursor = g.conn.execute(text(query), {'id':student_id})
         school_info = cursor.fetchone()
         return school_info
     finally:
@@ -144,7 +144,7 @@ def fetch_roles_info(student_id):
             JOIN Film ON Needs.FilmID = Film.FilmID
             WHERE Part_Of.StudentID = :id
         """
-        cursor = g.conn.execute(text(query), id=student_id)
+        cursor = g.conn.execute(text(query), {'id':student_id})
         roles_info = cursor.fetchall()
         return roles_info
     finally:
@@ -197,6 +197,10 @@ def student_id_exists(student_id):
     except Exception as e:
         error_message = f"Error checking student ID existence: {str(e)}"
         return False
+
+@app.route('/roles')
+def roles():
+    return render_template('roles.html')
 
 @app.route('/school', methods=['GET'])
 def school():

@@ -16,6 +16,11 @@
      <h2>Student Information</h2>
      
       {% if student_info %}
+      <h2>Find a Role</h2>
+      <a href="{{ url_for('roles') }}" class="button">
+        <button type="button">All Roles</button>
+      </a>
+      </form>
       <ul>
         <li style="color: red;">Student ID: {{ student_info[0] }}</li>
         <li>Name: {{ student_info[1] }}</li>
@@ -95,6 +100,7 @@
             {% endif %}
         </form>
     </div>
+    
 
 
   </body>
