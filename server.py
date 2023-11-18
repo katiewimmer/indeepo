@@ -234,10 +234,14 @@ def fetch_all_roles():
 def fetch_actor_roles():
     try:
         query = """
-            SELECT A.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+            SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
             FROM Role R
             JOIN Actor A ON R.RoleID = A.RoleID
-            JOIN Film F ON R.FilmID = F.FilmID
+            JOIN (
+                SELECT RoleID, FilmID
+                FROM Needs
+            ) N ON R.RoleID = N.RoleID
+            JOIN Film F ON N.FilmID = F.FilmID;
         """
         cursor = g.conn.execute(text(query))
         roles_info = cursor.fetchall()
@@ -248,10 +252,14 @@ def fetch_actor_roles():
 def fetch_producer_roles():
     try:
         query = """
-            SELECT P.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+            SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
             FROM Role R
             JOIN Producer P ON R.RoleID = P.RoleID
-            JOIN Film F ON R.FilmID = F.FilmID
+            JOIN (
+                SELECT RoleID, FilmID
+                FROM Needs
+            ) N ON R.RoleID = N.RoleID
+            JOIN Film F ON N.FilmID = F.FilmID;
         """
         cursor = g.conn.execute(text(query))
         roles_info = cursor.fetchall()
@@ -262,10 +270,14 @@ def fetch_producer_roles():
 def fetch_director_roles():
     try:
         query = """
-            SELECT D.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+            SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
             FROM Role R
             JOIN Director D ON R.RoleID = D.RoleID
-            JOIN Film F ON R.FilmID = F.FilmID
+            JOIN (
+                SELECT RoleID, FilmID
+                FROM Needs
+            ) N ON R.RoleID = N.RoleID
+            JOIN Film F ON N.FilmID = F.FilmID;
         """
         cursor = g.conn.execute(text(query))
         roles_info = cursor.fetchall()
@@ -276,10 +288,14 @@ def fetch_director_roles():
 def fetch_crew_roles():
     try:
         query = """
-            SELECT C.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+            SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
             FROM Role R
-            JOIN Crew C ON R.RoleID = C.RoleID
-            JOIN Film F ON R.FilmID = F.FilmID
+            JOIN Crew_Member C ON R.RoleID = C.RoleID
+            JOIN (
+                SELECT RoleID, FilmID
+                FROM Needs
+            ) N ON R.RoleID = N.RoleID
+            JOIN Film F ON N.FilmID = F.FilmID;
         """
         cursor = g.conn.execute(text(query))
         roles_info = cursor.fetchall()
