@@ -24,17 +24,27 @@
         <li>Year: {{ film_info[2] }}</li>
         <li>Genre: {{ film_info[3] }}</li>
         <li>Description: {{ film_info[4] }}</li>
-        <li>Stage of Production: {{ film_info[5] }}</li>
+        <li>Stage of Production:
+            {% if film_info[5] == 0 %}
+            Planning
+            {% elif film_info[5] == 1 %}
+            Being Made
+            {% elif film_info[5] == 2 %}
+            Made
+            {% else %}
+            Unknown
+            {% endif %}
+        </li>
         <li>Budget: {{ film_info[6] }}</li>
-        
+
         {% if school_info %}
-            <li>School Information:</li>
-            <ul>
-                <li>Name: {{ school_info[0] }}</li>
-                <li>Location: {{ school_info[1] }}</li>
-            </ul>
+        <li>School Information:</li>
+        <ul>
+            <li>Name: {{ school_info[0] }}</li>
+            <li>Location: {{ school_info[1] }}</li>
+        </ul>
         {% else %}
-            <li>No school information available.</li>
+        <li>No school information available.</li>
         {% endif %}
     </ul>
     {% else %}
@@ -59,13 +69,14 @@
             <input type="text" id="genre" name="genre" required>
             <p></p>
             <label for="description">Description:</label>
-            <textarea id="description" name="description" rows="4" cols="30" style="vertical-align: top;" required></textarea>
+            <textarea id="description" name="description" rows="4" cols="30" style="vertical-align: top;"
+                required></textarea>
 
             <label for="stageOfProduction">Stage of Production:</label>
             <select id="stageOfProduction" name="stageOfProduction" required>
-            <option value="Planning">Planning</option>
-            <option value="Being Made">Being Made</option>
-            <option value="Made">Made</option>
+                <option value="0">Planning</option>
+                <option value="1">Being Made</option>
+                <option value="2">Made</option>
             </select>
 
             <p></p>
@@ -74,8 +85,15 @@
 
             <!-- New fields for School ID -->
             <p></p>
-            <label for="schoolID">School ID:</label> 
-            <input type="text" id="schoolID" name="schoolID" required> * Need to have school ID authorization to register a film
+            <label for="schoolSelect">School:</label>
+            <select id="schoolSelect" name="schoolSelect" required>
+                {% for school in all_schools %}
+                <option value="{{ school[0] }}">{{ school[1] }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Hidden field to store the school ID -->
+            <input type="hidden" id="schoolID" name="schoolID">
 
             <p></p>
             <input type="submit" value="Register Film">
@@ -85,7 +103,92 @@
             {% endif %}
         </form>
 
+        <!-- JavaScript to update the hidden 'schoolID' field -->
+        <script>
+            document.getElementById('schoolSelect').addEventListener('change', function () {
+                // Set the hidden field value to the selected school ID
+                document.getElementById('schoolID').value = this.value;
+            });
+        </script>
     </div>
+    </div>
+    {% if film_info %}
+    <h2>Add Roles to the film</h2>
+    <div class="role-addition-form">
+        <h2>Add Role</h2>
+        <form action="/add_role" method="POST">
+            <label for="roleType">Role Type:</label>
+                <select id="roleType" name="roleType" required>
+                    <option value="" disabled selected>Select Role Type</option>
+                    <option value="Director">Director</option>
+                    <option value="Actor">Actor</option>
+                    <option value="Producer">Producer</option>
+                    <option value="Crew Member">Crew Member</option>
+                </select>
+
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description" required>
+
+            <label for="level">Level:</label>
+            <input type="number" id="level" name="level" required>
+
+            <!-- Additional fields for Director -->
+            <div id="directorFields" class="role-fields" style="display: none;">
+                <label for="salary">Salary:</label>
+                <input type="number" step="0.01" id="salary" name="salary" required>
+            </div>
+
+            <!-- Additional fields for Actor -->
+            <div id="actorFields" class="role-fields" style="display: none;">
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" required>
+
+                <label for="gender">Gender:</label>
+                <input type="text" id="gender" name="gender" required>
+
+                <label for="lineCount">Line Count:</label>
+                <input type="number" id="lineCount" name="lineCount" required>
+
+                <label for="pay">Pay:</label>
+                <input type="number" step="0.01" id="pay" name="pay" required>
+            </div>
+
+            <!-- Additional fields for Producer -->
+            <div id="producerFields" class="role-fields" style="display: none;">
+                <label for="producerType">Type:</label>
+                <input type="text" id="producerType" name="producerType" required>
+
+                <label for="inGuild">In Guild:</label>
+                <input type="number" id="inGuild" name="inGuild" required>
+
+                <label for="percentStake">Percent Stake:</label>
+                <input type="number" step="0.01" id="percentStake" name="percentStake" required>
+            </div>
+
+            <!-- Additional fields for Crew Member -->
+            <div id="crewMemberFields" class="role-fields" style="display: none;">
+                <label for="hourlyRate">Hourly Rate:</label>
+                <input type="number" step="0.01" id="hourlyRate" name="hourlyRate" required>
+            </div>
+            <p></p>
+            <input type="submit" value="Add Role">
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('roleType').addEventListener('change', function () {
+            // Hide all role fields
+            document.querySelectorAll('.role-fields').forEach(function (field) {
+                field.style.display = 'none';
+            });
+
+            // Show the selected role's fields
+            var selectedRole = this.value.replace(/\s+/g, '_').toLowerCase();
+            console.log("Selected Role:", selectedRole);
+            document.getElementById(selectedRole + 'Fields').style.display = 'block';
+        });
+    </script>
+    {% endif %}
 </body>
 
 </html>

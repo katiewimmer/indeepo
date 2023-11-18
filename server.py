@@ -12,7 +12,7 @@ import os
   # accessible as a variable in index.html:
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, session, g, redirect, Response, abort
+from flask import Flask, request, render_template, session, g, redirect, Response, abort, url_for
 from datetime import datetime
 import re
 
@@ -301,15 +301,18 @@ def school_id_exists(school_id):
 def film():
     film_id = request.args.get('filmID')
 
+    # Fetch all schools separately
+    all_schools = fetch_all_schools()
+
     # Get film information
     film_info = fetch_film_info(film_id)
     school_info = fetch_school_info_by_film(film_id)
 
     if film_info:
-        return render_template('filmmaker.html', film_info=film_info, school_info=school_info, film_not_found=False)
+        return render_template('filmmaker.html', film_info=film_info, school_info=school_info, all_schools=all_schools, film_not_found=False)
     else:
-        return render_template('filmmaker.html', film_info=None, school_info=None, film_not_found=True)
-
+        return render_template('filmmaker.html', film_info=None, school_info=None, film_not_found=True, all_schools=all_schools)
+    
 def fetch_film_info(film_id):
     try:
         query = """
@@ -375,12 +378,26 @@ def register_film():
         )
 
         # Redirect to the filmmaker view page with the newly registered filmID
-        return redirect(f'/film/?filmID={film_id}')
+        return redirect(url_for('film', filmID=film_id))
 
     except Exception as e:
         # Handle any other exceptions that may occur during registration
         error_message = f"An error occurred during registration: {str(e)}"
         return render_template('filmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
+
+@app.context_processor # ensures that all_schools is always populated
+def inject_all_schools():
+    all_schools = fetch_all_schools()
+    return dict(all_schools=all_schools)
+
+def fetch_all_schools():
+    try:
+        query = text("SELECT SchoolID, Name FROM School")
+        result = g.conn.execute(query)
+        schools = result.fetchall()
+        return schools if schools else []  # Return an empty list if no schools are found
+    finally:
+        result.close()
 
 def film_id_exists(film_id):
     try:
