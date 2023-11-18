@@ -200,7 +200,90 @@ def student_id_exists(student_id):
 
 @app.route('/roles')
 def roles():
-    return render_template('roles.html')
+    selected_roles = None
+
+    if request.method == 'GET':
+        if request.args.get('action') == 'fetch_all_roles':
+            selected_roles = fetch_all_roles()
+        elif request.args.get('action') == 'fetch_actor_roles':
+            selected_roles = fetch_actor_roles()
+        elif request.args.get('action') == 'fetch_producer_roles':
+            selected_roles = fetch_producer_roles()
+        elif request.args.get('action') == 'fetch_director_roles':
+            selected_roles = fetch_director_roles()
+        elif request.args.get('action') == 'fetch_crew_roles':
+            selected_roles = fetch_crew_roles()
+
+    return render_template('roles.html', roles_available=selected_roles)
+   
+
+def fetch_all_roles():
+    try:
+        query = """
+            SELECT A.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+            FROM Role R      
+        """
+        cursor = g.conn.execute(text(query), {'id':student_id})
+        roles_info = cursor.fetchall()
+        return roles_info
+    finally:
+        cursor.close()
+
+def fetch_actor_roles():
+    try:
+        query = """
+            SELECT A.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+            FROM Role R
+            JOIN Actor A ON R.RoleID = A.RoleID
+            JOIN Film F ON R.FilmID = F.FilmID
+        """
+        cursor = g.conn.execute(text(query))
+        roles_info = cursor.fetchall()
+        return roles_info
+    finally:
+        cursor.close()
+
+def fetch_actor_roles():
+    try:
+        query = """
+            SELECT P.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+            FROM Role R
+            JOIN Producer P ON R.RoleID = P.RoleID
+            JOIN Film F ON R.FilmID = F.FilmID
+        """
+        cursor = g.conn.execute(text(query))
+        roles_info = cursor.fetchall()
+        return roles_info
+    finally:
+        cursor.close()
+
+def fetch_actor_roles():
+    try:
+        query = """
+            SELECT D.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+            FROM Role R
+            JOIN Director D ON R.RoleID = D.RoleID
+            JOIN Film F ON R.FilmID = F.FilmID
+        """
+        cursor = g.conn.execute(text(query))
+        roles_info = cursor.fetchall()
+        return roles_info
+    finally:
+        cursor.close()
+
+def fetch_actor_roles():
+    try:
+        query = """
+            SELECT C.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+            FROM Role R
+            JOIN Crew C ON R.RoleID = C.RoleID
+            JOIN Film F ON R.FilmID = F.FilmID
+        """
+        cursor = g.conn.execute(text(query))
+        roles_info = cursor.fetchall()
+        return roles_info
+    finally:
+        cursor.close()
 
 @app.route('/school', methods=['GET'])
 def school():
