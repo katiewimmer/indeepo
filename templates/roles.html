@@ -1,1 +1,64 @@
-welcome!
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <h1>Indeepo</h1>
+
+    <h2>Find a Role:</h2>
+
+    <!-- Form for All Roles -->
+    <form action="/roles" method="GET">
+        <button type="submit" name="action" value="fetch_all_roles">All Roles</button>
+    </form>
+
+    <!-- Form for Actor Roles -->
+    <form action="/roles" method="GET">
+        <button type="submit" name="action" value="fetch_actor_roles">Actor Roles</button>
+    </form>
+
+    <!-- Form for Producer Roles -->
+    <form action="/roles" method="GET">
+        <button type="submit" name="action" value="fetch_producer_roles">Producer Roles</button>
+    </form>
+
+    <!-- Form for Director Roles -->
+    <form action="/roles" method="GET">
+        <button type="submit" name="action" value="fetch_director_roles">Director Roles</button>
+    </form>
+
+    <!-- Form for Crew Roles -->
+    <form action="/roles" method="GET">
+        <button type="submit" name="action" value="fetch_crew_roles">Crew Roles</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Role ID</th>
+                <th>Description</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Film Title</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for role in roles_available %}
+                <tr>
+                    <td>{{ role[0] }}</td>
+                    <td>{{ role[1] }}</td>
+                    <td>{{ role[2] }}</td>
+                    <td>{{ role[3] }}</td>
+                    <td>{{ role[4] }}</td>
+                    <td>{{ role[5] }}</td>
+                    <td>{{ role[6] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
