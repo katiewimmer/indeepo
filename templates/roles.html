@@ -33,6 +33,7 @@
         <button type="submit" name="action" value="fetch_crew_roles">Crew Roles</button>
     </form>
 
+    {% if roles_available %}
     <table>
         <thead>
             <tr>
@@ -59,6 +60,6 @@
             {% endfor %}
         </tbody>
     </table>
-
+    {% endif %}
 </body>
 </html>

@@ -198,7 +198,7 @@ def student_id_exists(student_id):
         error_message = f"Error checking student ID existence: {str(e)}"
         return False
 
-@app.route('/roles')
+@app.route('/roles', methods=['GET'])
 def roles():
     selected_roles = None
 
@@ -220,10 +220,12 @@ def roles():
 def fetch_all_roles():
     try:
         query = """
-            SELECT A.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
-            FROM Role R      
+            SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+                FROM Role R
+                JOIN Needs N ON R.RoleID = N.RoleID
+                JOIN Film F ON N.FilmID = F.FilmID;    
         """
-        cursor = g.conn.execute(text(query), {'id':student_id})
+        cursor = g.conn.execute(text(query))
         roles_info = cursor.fetchall()
         return roles_info
     finally:
@@ -243,7 +245,7 @@ def fetch_actor_roles():
     finally:
         cursor.close()
 
-def fetch_actor_roles():
+def fetch_producer_roles():
     try:
         query = """
             SELECT P.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
@@ -257,7 +259,7 @@ def fetch_actor_roles():
     finally:
         cursor.close()
 
-def fetch_actor_roles():
+def fetch_director_roles():
     try:
         query = """
             SELECT D.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
@@ -271,7 +273,7 @@ def fetch_actor_roles():
     finally:
         cursor.close()
 
-def fetch_actor_roles():
+def fetch_crew_roles():
     try:
         query = """
             SELECT C.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
