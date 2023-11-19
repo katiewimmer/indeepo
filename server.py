@@ -211,24 +211,10 @@ def student_id_exists(student_id):
 
 @app.route('/roles', methods=['GET'])
 def roles():
-    selected_roles = None
-
-    if request.method == 'GET':
-        if request.args.get('action') == 'fetch_all_roles':
-            selected_roles = fetch_all_roles()
-        elif request.args.get('action') == 'fetch_actor_roles':
-            selected_roles = fetch_actor_roles()
-        elif request.args.get('action') == 'fetch_producer_roles':
-            selected_roles = fetch_producer_roles()
-        elif request.args.get('action') == 'fetch_director_roles':
-            selected_roles = fetch_director_roles()
-        elif request.args.get('action') == 'fetch_crew_roles':
-            selected_roles = fetch_crew_roles()
-
-    return render_template('roles.html', roles_available=selected_roles)
+    return render_template('roles.html')
    
-
-def fetch_all_roles():
+@app.route('/all_roles', methods=['GET'])
+def all_roles():
     try:
         query = """
             SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
@@ -237,12 +223,13 @@ def fetch_all_roles():
                 JOIN Film F ON N.FilmID = F.FilmID;    
         """
         cursor = g.conn.execute(text(query))
-        roles_info = cursor.fetchall()
-        return roles_info
+        all_roles_info = cursor.fetchall()
+        return render_template('roles.html', all_roles_info= all_roles_info)
     finally:
         cursor.close()
 
-def fetch_actor_roles():
+@app.route('/actor_roles', methods=['GET'])
+def actor_roles():
     try:
         query = """
             SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title,
@@ -256,12 +243,13 @@ def fetch_actor_roles():
             JOIN Film F ON N.FilmID = F.FilmID;
         """
         cursor = g.conn.execute(text(query))
-        roles_info = cursor.fetchall()
-        return roles_info
+        actor_roles_info = cursor.fetchall()
+        return render_template('roles.html', actor_roles_info= actor_roles_info)
     finally:
         cursor.close()
 
-def fetch_producer_roles():
+@app.route('/producer_roles', methods=['GET'])
+def producer_roles():
     try:
         query = """
             SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title,
@@ -275,15 +263,16 @@ def fetch_producer_roles():
             JOIN Film F ON N.FilmID = F.FilmID;
         """
         cursor = g.conn.execute(text(query))
-        roles_info = cursor.fetchall()
-        return roles_info
+        producer_roles_info = cursor.fetchall()
+        return render_template('roles.html', producer_roles_info= producer_roles_info)
     finally:
         cursor.close()
 
-def fetch_director_roles():
+@app.route('/director_roles', methods=['GET'])
+def director_roles():
     try:
         query = """
-            SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+            SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title,
                     D.Salary
             FROM Role R
             JOIN Director D ON R.RoleID = D.RoleID
@@ -294,15 +283,16 @@ def fetch_director_roles():
             JOIN Film F ON N.FilmID = F.FilmID;
         """
         cursor = g.conn.execute(text(query))
-        roles_info = cursor.fetchall()
-        return roles_info
+        director_roles_info = cursor.fetchall()
+        return render_template('roles.html', director_roles_info= director_roles_info)
     finally:
         cursor.close()
 
-def fetch_crew_roles():
+@app.route('/crew_roles', methods=['GET'])
+def crew_roles():
     try:
         query = """
-            SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+            SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title,
                     C.Hourly_rate
             FROM Role R
             JOIN Crew_Member C ON R.RoleID = C.RoleID
@@ -313,8 +303,8 @@ def fetch_crew_roles():
             JOIN Film F ON N.FilmID = F.FilmID;
         """
         cursor = g.conn.execute(text(query))
-        roles_info = cursor.fetchall()
-        return roles_info
+        crew_roles_info = cursor.fetchall()
+        return render_template('roles.html', crew_roles_info= crew_roles_info)
     finally:
         cursor.close()
 

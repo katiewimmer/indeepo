@@ -9,34 +9,34 @@
     <h2>Find a Role:</h2>
 
     <!-- Form for All Roles -->
-    <form action="/roles" method="GET">
-        <button type="submit" name="action" value="fetch_all_roles">All Roles</button>
+    <form action="/all_roles" method="GET">
+        <button type="submit" name="action" value="all_roles">All Roles</button>
     </form>
 
     <!-- Form for Actor Roles -->
-    <form action="/roles" method="GET">
-        <button type="submit" name="action" value="fetch_actor_roles">Actor Roles</button>
+    <form action="/actor_roles" method="GET">
+        <button type="submit" name="action" value="actor_roles">Actor Roles</button>
     </form>
 
     <!-- Form for Producer Roles -->
-    <form action="/roles" method="GET">
-        <button type="submit" name="action" value="fetch_producer_roles">Producer Roles</button>
+    <form action="/producer_roles" method="GET">
+        <button type="submit" name="action" value="producer_roles">Producer Roles</button>
     </form>
 
     <!-- Form for Director Roles -->
-    <form action="/roles" method="GET">
-        <button type="submit" name="action" value="fetch_director_roles">Director Roles</button>
+    <form action="/director_roles" method="GET">
+        <button type="submit" name="action" value="director_roles">Director Roles</button>
     </form>
 
     <!-- Form for Crew Roles -->
-    <form action="/roles" method="GET">
-        <button type="submit" name="action" value="fetch_crew_roles">Crew Roles</button>
+    <form action="/crew_roles" method="GET">
+        <button type="submit" name="action" value="crew_roles">Crew Roles</button>
     </form>
 
-    {% if roles_available %}
+    {% if all_roles_info %}
     <table>
         <thead>
-            <tr>
+            <tr> 
                 <th>Role ID</th>
                 <th>Description</th>
                 <th>Level</th>
@@ -47,7 +47,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for role in roles_available %}
+            {% for role in all_roles_info %}
                 <tr>
                     <td>{{ role[0] }}</td>
                     <td>{{ role[1] }}</td>
@@ -61,5 +61,138 @@
         </tbody>
     </table>
     {% endif %}
+
+    {% if actor_roles_info %}
+    <table>
+        <thead>
+            <tr>
+                <th>Role ID</th>
+                <th>Description</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Film Title</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Line Count</th>
+                <th>Pay</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for role in actor_roles_info %}
+                <tr>
+                    <td>{{ role[0] }}</td>
+                    <td>{{ role[1] }}</td>
+                    <td>{{ role[2] }}</td>
+                    <td>{{ role[3] }}</td>
+                    <td>{{ role[4] }}</td>
+                    <td>{{ role[5] }}</td>
+                    <td>{{ role[6] }}</td>
+                    <td>{{ role[7] }}</td>
+                    <td>{{ role[8] }}</td>
+                    <td>{{ role[9] }}</td>
+                    <td>{{ role[10] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if producer_roles_info %}
+    <table>
+        <thead>
+            <tr>
+                <th>Role ID</th>
+                <th>Description</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Film Title</th>
+                <th>Producer Type</th>
+                <th>In Guild</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for role in producer_roles_info %}
+                <tr>
+                    <td>{{ role[0] }}</td>
+                    <td>{{ role[1] }}</td>
+                    <td>{{ role[2] }}</td>
+                    <td>{{ role[3] }}</td>
+                    <td>{{ role[4] }}</td>
+                    <td>{{ role[5] }}</td>
+                    <td>{{ role[6] }}</td>
+                    <td>{{ role[7] }}</td>
+                    <td>{{ role[8] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+{% if director_roles_info %}
+    <table>
+        <thead>
+            <tr>
+                <th>Role ID</th>
+                <th>Description</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Film Title</th>
+                <th>Salary</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for role in director_roles_info %}
+                <tr>
+                    <td>{{ role[0] }}</td>
+                    <td>{{ role[1] }}</td>
+                    <td>{{ role[2] }}</td>
+                    <td>{{ role[3] }}</td>
+                    <td>{{ role[4] }}</td>
+                    <td>{{ role[5] }}</td>
+                    <td>{{ role[6] }}</td>
+                    <td>{{ role[7] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+{% if crew_roles_info %}
+    <table>
+        <thead>
+            <tr>
+                <th>Role ID</th>
+                <th>Description</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Film Title</th>
+                <th>Hourly Rate</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for role in crew_roles_info %}
+                <tr>
+                    <td>{{ role[0] }}</td>
+                    <td>{{ role[1] }}</td>
+                    <td>{{ role[2] }}</td>
+                    <td>{{ role[3] }}</td>
+                    <td>{{ role[4] }}</td>
+                    <td>{{ role[5] }}</td>
+                    <td>{{ role[6] }}</td>
+                    <td>{{ role[7] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
 </body>
 </html>
