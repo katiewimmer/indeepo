@@ -112,31 +112,45 @@
         </script>
     </div>
     </div>
+
     {% if film_info %}
     <h2>Add Roles to the film</h2>
     <div class="role-addition-form">
-        <form action="/add_role" method="POST">
-            
+        <form id="addRoleForm" action="/add_role" method="POST">
+
             <input type="hidden" id="filmID" name="filmID" value="{{ film_info[0] }}">
-            
+
             <h3>Role ID must be a unique 8-digit number that starts with a 3 (ex. 3xxxxxxx)</h3>
             <label for="roleID">Role ID:</label>
             <input type="text" id="roleID" name="roleID" required>
             <p></p>
             <label for="roleType">Role Type:</label>
-                <select id="roleType" name="roleType" required>
-                    <option value="" disabled selected>Select Role Type</option>
-                    <option value="Director">Director</option>
-                    <option value="Actor">Actor</option>
-                    <option value="Producer">Producer</option>
-                    <option value="Crew">Crew</option>
-                </select>
+            <select id="roleType" name="roleType" required>
+                <option value="" disabled selected>Select Role Type</option>
+                <option value="Director">Director</option>
+                <option value="Actor">Actor</option>
+                <option value="Producer">Producer</option>
+                <option value="Crew">Crew</option>
+            </select>
 
             <label for="description">Description:</label>
             <input type="text" id="description" name="description" required>
 
             <label for="level">Level:</label>
             <input type="number" id="level" name="level" required>
+
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                <option value="" disabled selected>Select Status</option>
+                <option value="1">Active</option>
+                <option value="2">Inactive</option>
+            </select>
+
+            <label for="beginDate">Begin Date:</label>
+            <input type="date" id="beginDate" name="beginDate" required>
+
+            <label for="finishDate">Finish Date:</label>
+            <input type="date" id="finishDate" name="finishDate" required>
 
             <!-- Additional fields for Director -->
             <div id="directorFields" class="role-fields" style="display: none;">
@@ -177,7 +191,10 @@
                 <input type="number" step="0.01" id="hourlyRate" name="hourlyRate" required>
             </div>
             <p></p>
-            <input type="submit" value="Add Role">
+
+            <input type="button" value="Add Role" onclick="submitForm()">
+
+            <div id="result"></div>
 
             {% if error_message %}
             <p>Problem registering with given information:</p>
@@ -187,15 +204,19 @@
     </div>
 
     <script>
+        function submitForm() {
+            var form = document.getElementById('addRoleForm');
+            form.submit();
+        }
+
         document.getElementById('roleType').addEventListener('change', function () {
             var selectedRole = this.value.toLowerCase();
-            console.log("Selected Role:", selectedRole);
-    
+
             // Hide all role fields
             document.querySelectorAll('.role-fields').forEach(function (field) {
                 field.style.display = 'none';
             });
-    
+
             // Show the selected role's fields
             document.getElementById(selectedRole + 'Fields').style.display = 'block';
         });

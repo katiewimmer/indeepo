@@ -245,7 +245,8 @@ def fetch_all_roles():
 def fetch_actor_roles():
     try:
         query = """
-            SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+            SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title,
+                   A.Age, A.Gender, A.Line_Count, A.Pay
             FROM Role R
             JOIN Actor A ON R.RoleID = A.RoleID
             JOIN (
@@ -263,7 +264,8 @@ def fetch_actor_roles():
 def fetch_producer_roles():
     try:
         query = """
-            SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+            SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title,
+                    P.Type, P.In_Guild
             FROM Role R
             JOIN Producer P ON R.RoleID = P.RoleID
             JOIN (
@@ -282,6 +284,7 @@ def fetch_director_roles():
     try:
         query = """
             SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+                    D.Salary
             FROM Role R
             JOIN Director D ON R.RoleID = D.RoleID
             JOIN (
@@ -300,6 +303,7 @@ def fetch_crew_roles():
     try:
         query = """
             SELECT R.RoleID, R.Description, R.Level, R.Status, R.Begin, R.Finish, F.Title
+                    C.Hourly_rate
             FROM Role R
             JOIN Crew_Member C ON R.RoleID = C.RoleID
             JOIN (
@@ -522,6 +526,7 @@ def film_id_exists(film_id):
 
 @app.route('/add_role', methods=['POST'])
 def add_role():
+    print("in add_role")
     try:
         role_id = request.form.get('roleID')  # Assuming the role ID is part of the form
 
@@ -533,6 +538,9 @@ def add_role():
         role_type = request.form.get('roleType')
         description = request.form.get('description')
         level = int(request.form.get('level'))
+        status = int(request.form.get('status'))
+        begin_date = request.form.get('beginDate')
+        finish_date = request.form.get('finishDate')
 
         # Additional fields based on role type
         if role_type == 'Director':
@@ -551,8 +559,8 @@ def add_role():
 
         # Insert the role into the Role table
         g.conn.execute(
-            text("INSERT INTO Role (RoleID, Description, Level) VALUES (:role_id, :description, :level)"),
-            role_id=role_id, description=description, level=level
+            text("INSERT INTO Role (RoleID, Description, Level, Status, Begin, Finish) VALUES (:role_id, :description, :level, :status, :begin_date, :finish_date)"),
+            role_id=role_id, description=description, level=level, status=status, begin_date=begin_date, finish_date=finish_date
         )
 
         # Insert role-specific details into the appropriate table
