@@ -311,6 +311,9 @@ def school():
     
     school_id = request.args.get('schoolID')
 
+    if school_id is None or school_id == '':
+            return render_template('school.html',school_info=None, school_not_found=True)
+
     # Get school information
     school_info = fetch_school_info2(school_id)
     students_info = fetch_students_attending_school(school_id)
@@ -402,7 +405,10 @@ def film():
 
     film_id = request.args.get('filmID')
 
-    # Fetch all schools separately
+    if film_id is None or film_id == '':
+        return render_template('filmmaker.html', film_info=None, school_info=None, film_not_found=True, all_schools=[], students_info=[])
+    
+    
     all_schools = fetch_all_schools()
 
     film_info = fetch_film_info(film_id)
