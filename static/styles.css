@@ -1,8 +1,7 @@
 body{ 
     font-size: 15pt;
     font-family: 'Times New Roman', Times, serif;
-    background-color: #245c94; /* Dark blue background for the entire page */
-    /*color: white; Set the default text color to white */
+    background-color: #245c94; 
 }
 
 button {
@@ -14,7 +13,7 @@ button {
     }
 
 .find-button {
-    background-color:  lightblue; /* A slightly darker shade on hover */
+    background-color:  lightblue; 
     padding: 0px 15px;
     border: none;
     cursor: pointer;
@@ -33,7 +32,7 @@ button {
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 50%; /* Set the initial width to half of the page */
+    width: 50%; 
     background-color: #f1f1f1;
     padding: 20px;
     border-radius: 5px;
@@ -70,7 +69,6 @@ th, td {
     text-align: left;
 }
 
-/* Allow the description to span multiple lines */
 td.description {
     white-space: pre-line;
 }
