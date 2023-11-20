@@ -253,6 +253,24 @@
     <p>No students available for this school.</p>
     {% endif %}
 
+    <h2>Add Student to Film</h2>
+    <form action="/add_student_to_film" method="POST">
+    <input type="hidden" name="filmID" value="{{ film_info[0] }}">
+
+    <label for="studentID">Enter Student ID:</label>
+    <input type="text" id="studentID" name="studentID" required>
+
+    <label for="roleID">Enter Role ID:</label>
+    <input type="text" id="roleID" name="roleID" required>
+
+    <input type="submit" value="Add Student to Film">
+    
+    {% if error_message_2 %}
+    <p>Problem registering with given information:</p>
+    <p style="color: red;">{{ error_message_2 }}</p>
+    {% endif %}
+    </form>
+
     {% endif %}
 
 

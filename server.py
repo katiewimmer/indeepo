@@ -508,6 +508,64 @@ def register_film():
         error_message = f"An error occurred during registration: {str(e)}"
         return render_template('filmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
 
+@app.route('/add_student_to_film', methods=['POST'])
+def add_student_to_film():
+    film_id = request.form.get('filmID')
+    student_id = request.form.get('studentID')
+    role_id = request.form.get('roleID')
+
+    try:
+        # Validate inputs
+        if not (film_id and student_id and role_id):
+            error_message_2 = 'Error: Incomplete form data'
+            return render_template('filmmaker.html', film_info=fetch_film_info(film_id), 
+            school_info=fetch_school_info_by_film(film_id), all_schools=fetch_all_schools(), 
+            students_info=fetch_students_for_school(film_id), error_message_2=error_message_2)
+
+        # Validate film_id, student_id, and role_id formats (customize as needed)
+        print(film_id)
+        print(student_id)
+        print(role_id)
+        if not re.match(r'^2\d{7}$', film_id) or not re.match(r'^3\d{7}$', role_id):
+            error_message_2 = 'Error: Invalid ID format'
+            return render_template('filmmaker.html', film_info=fetch_film_info(film_id), 
+            school_info=fetch_school_info_by_film(film_id), all_schools=fetch_all_schools(), 
+            students_info=fetch_students_for_school(film_id), error_message_2=error_message_2)
+
+        # Perform the database operation to add the student to the film
+        result = add_student_to_film(student_id, film_id, role_id)
+
+        if not result:
+            error_message_2 = 'Error: Unable to add student to film'
+            return render_template('filmmaker.html', film_info=fetch_film_info(film_id), 
+            school_info=fetch_school_info_by_film(film_id), all_schools=fetch_all_schools(), 
+            students_info=fetch_students_for_school(film_id), error_message_2=error_message_2)
+
+        # No error occurred, no change to the page
+        return render_template('filmmaker.html', film_info=fetch_film_info(film_id), 
+        school_info=fetch_school_info_by_film(film_id), all_schools=fetch_all_schools(), 
+        students_info=fetch_students_for_school(film_id), error_message_2=None)
+
+    except Exception as e:
+        # Handle any other exceptions that may occur during the process
+        error_message_2 = f'An error occurred: {str(e)}'
+        return render_template('filmmaker.html', film_info=fetch_film_info(film_id),
+         school_info=fetch_school_info_by_film(film_id), all_schools=fetch_all_schools(), 
+         students_info=fetch_students_for_school(film_id), error_message_2=error_message_2)
+
+def add_student_to_film(student_id, film_id, role_id):
+    try:
+        # Assuming you have a table named Part_Of
+        g.conn.execute(
+            text("INSERT INTO Part_Of (StudentID, FilmID, RoleID) VALUES (:student_id, :film_id, :role_id)"),
+            student_id=student_id, film_id=film_id, role_id=role_id
+        )
+        return True  # Success
+    except Exception as e:
+        # Log the error or handle it as needed
+        print(f"Error adding student to film: {str(e)}")
+        return False  # Failure
+
 @app.context_processor # ensures that all_schools is always populated
 def inject_all_schools():
     all_schools = fetch_all_schools()
