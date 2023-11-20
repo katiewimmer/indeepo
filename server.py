@@ -100,6 +100,10 @@ def student():
 
     all_schools = fetch_all_schools()
     # Check if the form has been submitted
+
+    if request.args.get('studentID', '').lower() == '':
+        return render_template('student.html')
+    
     if 'studentID' in request.args:
         student_id = request.args.get('studentID', '').lower()
         student_info = fetch_student_info(student_id)
@@ -310,6 +314,10 @@ def crew_roles():
 
 @app.route('/school', methods=['GET'])
 def school():
+    
+    if request.args.get('studentID', '').lower() == '':
+        return render_template('school.html')
+    
     school_id = request.args.get('schoolID')
 
     # Get school information
@@ -405,6 +413,10 @@ def school_id_exists(school_id):
 
 @app.route('/film', methods=['GET'])
 def film():
+
+    if request.args.get('studentID', '').lower() == '':
+        return render_template('filmmaker.html')
+    
     film_id = request.args.get('filmID')
 
     # Fetch all schools separately
