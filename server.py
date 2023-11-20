@@ -99,13 +99,13 @@ def filmmaker():
 def student():
 
     all_schools = fetch_all_schools()
-    # Check if the form has been submitted
-
-    if request.args.get('studentID', '').lower() == '':
-        return render_template('student.html')
     
     if 'studentID' in request.args:
         student_id = request.args.get('studentID', '').lower()
+
+        if student_id is None or student_id == '':
+            return render_template('student.html', school_info=None, school_not_found=True)
+    
         student_info = fetch_student_info(student_id)
         school_info = fetch_school_info(student_id)
         roles_info = fetch_roles_info(student_id)
@@ -315,10 +315,10 @@ def crew_roles():
 @app.route('/school', methods=['GET'])
 def school():
     
-    if request.args.get('studentID', '').lower() == '':
-        return render_template('school.html')
-    
     school_id = request.args.get('schoolID')
+
+    if school_id is None or school_id == '':
+        return render_template('school.html', school_info=None, school_not_found=True)
 
     # Get school information
     school_info = fetch_school_info2(school_id)
@@ -414,10 +414,10 @@ def school_id_exists(school_id):
 @app.route('/film', methods=['GET'])
 def film():
 
-    if request.args.get('studentID', '').lower() == '':
-        return render_template('filmmaker.html')
-    
     film_id = request.args.get('filmID')
+
+    if film_id is None or film_id == '':
+        return render_template('filmmaker.html', film_info=None, school_info=None, film_not_found=False, all_schools=[], students_info=[])
 
     # Fetch all schools separately
     all_schools = fetch_all_schools()
