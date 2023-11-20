@@ -9,7 +9,6 @@ A debugger such as "pdb" may be helpful for debugging.
 Read about it online.
 """
 import os
-  # accessible as a variable in index.html:
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, session, g, redirect, Response, abort, url_for
@@ -91,7 +90,6 @@ def teardown_request(exception):
 
 @app.route('/filmmaker/')
 def filmmaker():
-    # Your filmmaker route logic here
     return render_template('filmmaker.html')
 
 
@@ -99,7 +97,6 @@ def filmmaker():
 def student():
 
     all_schools = fetch_all_schools()
-    # Check if the form has been submitted
 
     if request.args.get('studentID', '').lower() == '':
         return render_template('student.html')
@@ -115,7 +112,6 @@ def student():
         else:
             return render_template('student.html', student_not_found=True, all_schools=all_schools)
 
-    # If the form has not been submitted, render the empty student.html
     return render_template('student.html', student_info = None)
 
 def fetch_student_info(student_id):
@@ -168,19 +164,16 @@ def register_student():
         school_id = request.form.get('schoolSelect')
         sinceDate = datetime.strptime(request.form.get('sinceDate'), '%Y-%m-%d')
 
-        # Check if the studentID already exists
         if student_id_exists(studentID):
             error_message = "Error: Student ID already in use. Please choose a different ID."
             return render_template('student.html', error_message=error_message)
 
-        # Insert the new student into the database and return the studentID
         result = g.conn.execute(
             text("INSERT INTO student (StudentID, Name, Age, Gender, Status, GPA) VALUES (:studentID, :name, :age, :gender, :status, :gpa) RETURNING StudentID"),
             studentID=studentID, name=name, age=age, gender=gender, status=status, gpa=gpa
         )
         new_student_id = result.fetchone()[0]
 
-        # Insert school information into the Attends table
         try:
             g.conn.execute(
                 text("INSERT INTO Attends (StudentID, SchoolID, Since) VALUES (:studentID, :schoolID, :sinceDate)"),
@@ -188,19 +181,15 @@ def register_student():
             )
 
         except IntegrityError as e:
-            # Handle the case where there was an integrity error (e.g., duplicate key violation)
-            # Rollback the transaction and delete the student
             g.conn.execute(text("DELETE FROM student WHERE StudentID = :studentID"), studentID=new_student_id)
 
             error_message = f"An error occurred during registration: {str(e)}"
             return render_template('student.html', error_message=error_message)
 
-        # Redirect to the student view page with the newly registered studentID
         new_student_id = studentID
         return redirect(url_for('student', studentID=new_student_id))
 
     except Exception as e:
-        # Handle any other exceptions that may occur during registration
         error_message = f"An error occurred during registration: {str(e)}"
         return render_template('student.html', error_message=error_message)
     
@@ -319,8 +308,6 @@ def school():
         return render_template('school.html')
     
     school_id = request.args.get('schoolID')
-
-    # Get school information
     school_info = fetch_school_info2(school_id)
     students_info = fetch_students_attending_school(school_id)
     films_info = fetch_films_by_school(school_id)
@@ -378,27 +365,22 @@ def register_school():
         location = request.form.get('location')
         description = request.form.get('description')
 
-        # Validate school_id format
         if not re.match(r'^1\d{7}$', school_id):
             error_message = "Error: School ID must be an 8-digit number starting with 1."
             return render_template('school.html', error_message=error_message, school_info=None, school_not_found=True)
 
-        # Check if the schoolID already exists
         if school_id_exists(school_id):
             error_message = "Error: School ID already in use. Please choose a different ID."
             return render_template('school.html', error_message=error_message, school_info=None, school_not_found=True)
 
-        # Insert the new school into the database
         g.conn.execute(
             text("INSERT INTO School (SchoolID, Name, Location, Description) VALUES (:schoolID, :name, :location, :description)"),
             schoolID=school_id, name=name, location=location, description=description
         )
 
-        # Redirect to the school view page with the newly registered schoolID
         return redirect(url_for('school', school_id=school_id))
 
     except Exception as e:
-        # Handle any other exceptions that may occur during registration
         error_message = f"An error occurred during registration: {str(e)}"
         return render_template('school.html', error_message=error_message, school_info=None, school_not_found=True)
     
@@ -419,10 +401,8 @@ def film():
     
     film_id = request.args.get('filmID')
 
-    # Fetch all schools separately
     all_schools = fetch_all_schools()
 
-    # Get film information
     film_info = fetch_film_info(film_id)
     school_info = fetch_school_info_by_film(film_id)
     print(school_info[2])
@@ -488,23 +468,18 @@ def register_film():
         budget = request.form.get('budget')
         school_id = request.form.get('schoolID')
 
-        # Validate school_id format
         if not re.match(r'^2\d{7}$', film_id):
             error_message = "Error: Film ID must be an 8-digit number starting with 2."
             return render_template('fiilmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
 
-
-        # Validate film_id format
         if not film_id or not film_id.isdigit():
             error_message = "Error: Film ID must be a valid number."
             return render_template('filmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
 
-        # Check if the filmID already exists
         if film_id_exists(film_id):
             error_message = "Error: Film ID already in use. Please choose a different ID."
             return render_template('filmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
 
-        # Insert the new film into the database
         g.conn.execute(
             text("INSERT INTO Film (FilmID, Title, Year, Genre, Description, Stage_of_production, Budget, SchoolID) " +
                  "VALUES (:filmID, :title, :year, :genre, :description, :stage_of_production, :budget, :schoolID)"),
@@ -512,11 +487,9 @@ def register_film():
             description=description, stage_of_production=stage_of_production, budget=budget, schoolID=school_id
         )
 
-        # Redirect to the filmmaker view page with the newly registered filmID
         return redirect(url_for('film', filmID=film_id))
 
     except Exception as e:
-        # Handle any other exceptions that may occur during registration
         error_message = f"An error occurred during registration: {str(e)}"
         return render_template('filmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
 
@@ -527,14 +500,12 @@ def add_student_to_film():
     role_id = request.form.get('roleID')
 
     try:
-        # Validate inputs
         if not (film_id and student_id and role_id):
             error_message_2 = 'Error: Incomplete form data'
             return render_template('filmmaker.html', film_info=fetch_film_info(film_id), 
             school_info=fetch_school_info_by_film(film_id), all_schools=fetch_all_schools(), 
             students_info=fetch_students_for_school(film_id), error_message_2=error_message_2)
 
-        # Validate film_id, student_id, and role_id formats (customize as needed)
         print(film_id)
         print(student_id)
         print(role_id)
@@ -544,7 +515,6 @@ def add_student_to_film():
             school_info=fetch_school_info_by_film(film_id), all_schools=fetch_all_schools(), 
             students_info=fetch_students_for_school(film_id), error_message_2=error_message_2)
 
-        # Perform the database operation to add the student to the film
         result = add_student_to_film(student_id, film_id, role_id)
 
         if not result:
@@ -553,13 +523,11 @@ def add_student_to_film():
             school_info=fetch_school_info_by_film(film_id), all_schools=fetch_all_schools(), 
             students_info=fetch_students_for_school(film_id), error_message_2=error_message_2)
 
-        # No error occurred, no change to the page
         return render_template('filmmaker.html', film_info=fetch_film_info(film_id), 
         school_info=fetch_school_info_by_film(film_id), all_schools=fetch_all_schools(), 
         students_info=fetch_students_for_school(film_id), error_message_2=None)
 
     except Exception as e:
-        # Handle any other exceptions that may occur during the process
         error_message_2 = f'An error occurred: {str(e)}'
         return render_template('filmmaker.html', film_info=fetch_film_info(film_id),
          school_info=fetch_school_info_by_film(film_id), all_schools=fetch_all_schools(), 
@@ -567,18 +535,16 @@ def add_student_to_film():
 
 def add_student_to_film(student_id, film_id, role_id):
     try:
-        # Assuming you have a table named Part_Of
         g.conn.execute(
             text("INSERT INTO Part_Of (StudentID, FilmID, RoleID) VALUES (:student_id, :film_id, :role_id)"),
             student_id=student_id, film_id=film_id, role_id=role_id
         )
-        return True  # Success
+        return True  
     except Exception as e:
-        # Log the error or handle it as needed
         print(f"Error adding student to film: {str(e)}")
-        return False  # Failure
+        return False
 
-@app.context_processor # ensures that all_schools is always populated
+@app.context_processor 
 def inject_all_schools():
     all_schools = fetch_all_schools()
     return dict(all_schools=all_schools)
@@ -588,7 +554,7 @@ def fetch_all_schools():
         query = text("SELECT SchoolID, Name FROM School")
         result = g.conn.execute(query)
         schools = result.fetchall()
-        return schools if schools else []  # Return an empty list if no schools are found
+        return schools if schools else []  
     finally:
         result.close()
 
@@ -605,9 +571,7 @@ def film_id_exists(film_id):
 def add_role():
     print("in add_role")
     try:
-        role_id = request.form.get('roleID')  # Assuming the role ID is part of the form
-
-        # Validate role_id format
+        role_id = request.form.get('roleID')  
         if not re.match(r'^3\d{7}$', role_id):
             error_message = "Error: Role ID must be an 8-digit number starting with 3."
             return render_template('filmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
@@ -619,7 +583,6 @@ def add_role():
         begin_date = request.form.get('beginDate')
         finish_date = request.form.get('finishDate')
 
-        # Additional fields based on role type
         if role_type == 'Director':
             salary = float(request.form.get('salary'))
         elif role_type == 'Actor':
@@ -634,13 +597,11 @@ def add_role():
         elif role_type == 'Crew':
             hourly_rate = float(request.form.get('hourlyRate'))
 
-        # Insert the role into the Role table
         g.conn.execute(
             text("INSERT INTO Role (RoleID, Description, Level, Status, Begin, Finish) VALUES (:role_id, :description, :level, :status, :begin_date, :finish_date)"),
             role_id=role_id, description=description, level=level, status=status, begin_date=begin_date, finish_date=finish_date
         )
 
-        # Insert role-specific details into the appropriate table
         if role_type == 'Director':
             g.conn.execute(
                 text("INSERT INTO Director (RoleID, Salary) VALUES (:role_id, :salary)"),
@@ -662,18 +623,15 @@ def add_role():
                 role_id=role_id, hourly_rate=hourly_rate
             )
 
-        # Add the role to the Needs table for the current film (replace 123 with the actual FilmID)
-        film_id = request.form.get('filmID')  # Assuming the film ID is part of the form
+        film_id = request.form.get('filmID')  
         g.conn.execute(
             text("INSERT INTO Needs (RoleID, FilmID, Posted) VALUES (:role_id, :film_id, :posted)"),
             role_id=role_id, film_id=film_id, posted=datetime.utcnow()
         )
 
-        return redirect(url_for('film', filmID=film_id))  # Redirect to the film page after adding the role
+        return redirect(url_for('film', filmID=film_id))  
 
     except IntegrityError as e:
-        # Handle the case where there was an integrity error (e.g., duplicate key violation)
-        # Rollback the transaction and display an error message
         g.conn.execute(text("ROLLBACK"))
         error_message = f"An error occurred while adding the role: {str(e)}"
         return render_template('filmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
