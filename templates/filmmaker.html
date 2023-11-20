@@ -221,7 +221,41 @@
             document.getElementById(selectedRole + 'Fields').style.display = 'block';
         });
     </script>
+
+    <h2>Potentially Interested Students</h2>
+    {% if students_info %}
+    <h3>Students at {{ school_info[0] }}</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Status</th>
+                <th>GPA</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students_info %}
+                <tr>
+                    <td>{{ student[0] }}</td>
+                    <td>{{ student[1] }}</td>
+                    <td>{{ student[2] }}</td>
+                    <td>{{ student[3] }}</td>
+                    <td>{{ "Active" if student[4] == 1 else "Inactive" }}</td>
+                    <td>{{ student[5] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No students available for this school.</p>
     {% endif %}
+
+    {% endif %}
+
+
 </body>
 
 </html>

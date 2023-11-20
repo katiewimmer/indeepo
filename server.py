@@ -413,11 +413,14 @@ def film():
     # Get film information
     film_info = fetch_film_info(film_id)
     school_info = fetch_school_info_by_film(film_id)
+    print(school_info[2])
+    students_info = fetch_students_for_school(school_info[2]) if school_info else []
+    print(students_info)
 
     if film_info:
-        return render_template('filmmaker.html', film_info=film_info, school_info=school_info, all_schools=all_schools, film_not_found=False)
+        return render_template('filmmaker.html', film_info=film_info, school_info=school_info, all_schools=all_schools, film_not_found=False, students_info=students_info)
     else:
-        return render_template('filmmaker.html', film_info=None, school_info=None, film_not_found=True, all_schools=all_schools)
+        return render_template('filmmaker.html', film_info=None, school_info=None, film_not_found=True, all_schools=all_schools, students_info=students_info)
     
 def fetch_film_info(film_id):
     try:
@@ -436,7 +439,7 @@ def fetch_film_info(film_id):
 def fetch_school_info_by_film(film_id):
     try:
         query = """
-            SELECT School.Name, School.Location
+            SELECT School.Name, School.Location, School.SchoolID
             FROM School
             JOIN Film ON School.SchoolID = Film.SchoolID
             WHERE Film.FilmID = :id
@@ -444,6 +447,20 @@ def fetch_school_info_by_film(film_id):
         cursor = g.conn.execute(text(query), id=film_id)
         school_info = cursor.fetchone()
         return school_info
+    finally:
+        cursor.close()
+
+def fetch_students_for_school(school_id):
+    try:
+        query = """
+            SELECT S.StudentID, S.Name, S.Age, S.Gender, S.Status, S.GPA
+            FROM Student S
+            JOIN Attends A ON S.StudentID = A.StudentID
+            WHERE A.SchoolID = :school_id;
+        """
+        cursor = g.conn.execute(text(query), school_id=school_id)
+        students_info = cursor.fetchall()
+        return students_info
     finally:
         cursor.close()
 
