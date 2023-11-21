@@ -189,7 +189,6 @@ def register_student():
         )   
 
         # add to the attends table for the school that was entered
-        # add to the attends table for the school that was entered
         try:
             g.conn.execute(
             text("INSERT INTO Attends (StudentID, SchoolID, Since) VALUES (:studentID, :schoolID, :sinceDate)"),
@@ -206,6 +205,7 @@ def register_student():
         return render_template('student.html', error_message=error_message)
     
     # render new page with the newly registered student logged in
+    g.conn.commit()
     return redirect(url_for('student', studentID=studentID))
     
 def student_id_exists(student_id):
