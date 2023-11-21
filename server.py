@@ -655,6 +655,7 @@ def add_role():
         status = int(request.form.get('status'))
         begin_date = request.form.get('beginDate')
         finish_date = request.form.get('finishDate')
+        film_id = request.form.get('filmID')
 
         # find out which type is being entered, and get the additional info for it
         if role_type == 'Director':
