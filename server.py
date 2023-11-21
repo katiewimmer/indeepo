@@ -518,7 +518,8 @@ def register_film():
         description = request.form.get('description')
         stage_of_production = request.form.get('stageOfProduction')
         budget = request.form.get('budget')
-        schoolID = request.form.get('schoolID')
+        
+        school_id = request.form.get('schoolSelect')
 
         # check that the film id is in the correct format
         if not re.match(r'^2\d{7}$', film_id):
@@ -540,7 +541,7 @@ def register_film():
         text("INSERT INTO Film (FilmID, Title, Year, Genre, Description, Stage_of_production, Budget, SchoolID) " +
             "VALUES (:filmID, :title, :year, :genre, :description, :stage_of_production, :budget, :schoolID)"),
             {'filmID': film_id, 'title': title, 'year': year, 'genre': genre,
-            'description': description, 'stage_of_production': stage_of_production, 'budget': budget, 'schoolID': schoolID}
+            'description': description, 'stage_of_production': stage_of_production, 'budget': budget, 'schoolID': school_id}
             )
 
         # redner a new page with the newlt registered film logged in
