@@ -717,7 +717,10 @@ def add_role():
         g.conn.execute(text("ROLLBACK"))
         error_message2 = f"An error occurred while adding the role: {str(e)}"
 
-    return render_template('filmmaker.html', error_message2=error_message2, film_info={'filmID': film_id}, film_not_found=False)
+    # renders the page with the same film info, passes along error message
+    film_info = fetch_film_info(film_id)
+    return render_template('filmmaker.html', error_message2=error_message2, film_info=film_info, film_not_found=False)
+
 @app.route('/')
 def index():
   """
