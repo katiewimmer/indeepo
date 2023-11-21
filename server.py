@@ -423,7 +423,7 @@ def register_school():
         )
 
         # render the page with the newly registered school logged in
-        return redirect(url_for('school', school_id=school_id))
+        return redirect(url_for('school', schoolID=school_id))
 
     except Exception as e:
         # return any errors that took place 
