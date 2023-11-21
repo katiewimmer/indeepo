@@ -186,7 +186,7 @@ def register_student():
         query = text("INSERT INTO student (StudentID, Name, Age, Gender, Status, GPA) VALUES (:studentID, :name, :age, :gender, :status, :gpa) RETURNING StudentID")
         params = {'studentID': studentID, 'name': name, 'age': age, 'gender': gender, 'status': status, 'gpa': gpa}
         result = g.conn.execute(query, params)
-        new_student_id = result.fetchone()[0]
+        new_student_id = result.fetchone()[0]       
 
         # add to the attends table for the school that was entered
         query = text("INSERT INTO Attends (StudentID, SchoolID, Since) VALUES (:studentID, :schoolID, :sinceDate)")
