@@ -184,26 +184,27 @@ def register_student():
 
         # add the student into the student table
         g.conn.execute(
-        text("INSERT INTO student (StudentID, Name, Age, Gender, Status, GPA) VALUES (:studentID, :name, :age, :gender, :status, :gpa)"),
-        {'studentID': studentID, 'name': name, 'age': age, 'gender': gender, 'status': status, 'gpa': gpa}
-        )   
+            text("INSERT INTO student (StudentID, Name, Age, Gender, Status, GPA) VALUES (:studentID, :name, :age, :gender, :status, :gpa)"),
+            {'studentID': studentID, 'name': name, 'age': age, 'gender': gender, 'status': status, 'gpa': gpa}
+        )
 
         # add to the attends table for the school that was entered
-        try:
-            g.conn.execute(
+        g.conn.execute(
             text("INSERT INTO Attends (StudentID, SchoolID, Since) VALUES (:studentID, :schoolID, :sinceDate)"),
             {'studentID': studentID, 'schoolID': school_id, 'sinceDate': sinceDate}
-            )
-        except IntegrityError as e:
-            g.conn.execute(text("DELETE FROM student WHERE StudentID = :studentID"), {'studentID': studentID})
-            error_message = f"An error occurred during registration: {str(e)}"       
-            return render_template('student.html', error_message=error_message)
+        )
 
-    # return any error messages that occured
+    # handle integrity error (e.g., unique constraint violation)
+    except IntegrityError as e:
+        g.conn.execute(text("DELETE FROM student WHERE StudentID = :studentID"), {'studentID': studentID})
+        error_message = f"An error occurred during registration: {str(e)}"
+        return render_template('student.html', error_message=error_message)
+
+    # handle other exceptions
     except Exception as e:
         error_message = f"An error occurred during registration: {str(e)}"
         return render_template('student.html', error_message=error_message)
-    
+
     # render new page with the newly registered student logged in
     g.conn.commit()
     return redirect(url_for('student', studentID=studentID))
