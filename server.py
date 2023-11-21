@@ -412,13 +412,14 @@ def register_school():
             error_message = "Error: School ID already in use. Please choose a different ID."
             return render_template('school.html', error_message=error_message, school_info=None, school_not_found=True)
 
-        # attempt to insert it into the school table
+        # attempt to insert it into the school table FIX THIS AND ADD COMMIT
         g.conn.execute(
             text("INSERT INTO School (SchoolID, Name, Location, Description) VALUES (:schoolID, :name, :location, :description)"),
-            schoolID=school_id, name=name, location=location, description=description
+            {'schoolID': school_id, 'name': name, 'location': location, 'description': description}
         )
 
         # render the page with the newly registered school logged in
+        g.conn.commit()
         return redirect(url_for('school', schoolID=school_id))
 
     except Exception as e:
@@ -430,7 +431,7 @@ def school_id_exists(school_id):
     # check and see if there are any schools with the school id
     try:
         query = text("SELECT EXISTS(SELECT 1 FROM School WHERE SchoolID = :schoolID)")
-        result = g.conn.execute(query, schoolID=school_id).scalar()
+        result = g.conn.execute(query, {'schoolID': school_id}).scalar()
         return result
     except Exception as e:
         error_message = f"Error checking school ID existence: {str(e)}"
@@ -534,13 +535,14 @@ def register_film():
 
         # attempt to insert into the film table
         g.conn.execute(
-            text("INSERT INTO Film (FilmID, Title, Year, Genre, Description, Stage_of_production, Budget, SchoolID) " +
-                 "VALUES (:filmID, :title, :year, :genre, :description, :stage_of_production, :budget, :schoolID)"),
-            filmID=film_id, title=title, year=year, genre=genre,
-            description=description, stage_of_production=stage_of_production, budget=budget, schoolID=school_id
-        )
+        text("INSERT INTO Film (FilmID, Title, Year, Genre, Description, Stage_of_production, Budget, SchoolID) " +
+            "VALUES (:filmID, :title, :year, :genre, :description, :stage_of_production, :budget, :schoolID)"),
+            {'filmID': film_id, 'title': title, 'year': year, 'genre': genre,
+            'description': description, 'stage_of_production': stage_of_production, 'budget': budget, 'schoolID': school_id}
+            )
 
         # redner a new page with the newlt registered film logged in
+        g.conn.commit()
         return redirect(url_for('film', filmID=film_id))
 
     except Exception as e:
@@ -595,9 +597,10 @@ def add_student_to_film(student_id, film_id, role_id):
     try:
         # add the tuple to part_of 
         g.conn.execute(
-            text("INSERT INTO Part_Of (StudentID, FilmID, RoleID) VALUES (:student_id, :film_id, :role_id)"),
-            student_id=student_id, film_id=film_id, role_id=role_id
+        text("INSERT INTO Part_Of (StudentID, FilmID, RoleID) VALUES (:student_id, :film_id, :role_id)"),
+        {'student_id': student_id, 'film_id': film_id, 'role_id': role_id}
         )
+        g.conn.commit()
         return True  
     except Exception as e:
         print(f"Error adding student to film: {str(e)}")
@@ -624,7 +627,7 @@ def film_id_exists(film_id):
     # check to see if a fild id is already in use
     try:
         query = text("SELECT EXISTS(SELECT 1 FROM Film WHERE FilmID = :filmID)")
-        result = g.conn.execute(query, filmID=film_id).scalar()
+        result = g.conn.execute(query, {'filmID': film_id}).scalar()        
         return result
     except Exception as e:
         error_message = f"Error checking film ID existence: {str(e)}"
@@ -665,41 +668,41 @@ def add_role():
         # insert into the role table
         g.conn.execute(
             text("INSERT INTO Role (RoleID, Description, Level, Status, Begin, Finish) VALUES (:role_id, :description, :level, :status, :begin_date, :finish_date)"),
-            role_id=role_id, description=description, level=level, status=status, begin_date=begin_date, finish_date=finish_date
+            {'role_id': role_id, 'description': description, 'level': level, 'status': status, 'begin_date': begin_date, 'finish_date': finish_date}
         )
 
         # add special info to director table with same role id
         if role_type == 'Director':
             g.conn.execute(
-                text("INSERT INTO Director (RoleID, Salary) VALUES (:role_id, :salary)"),
-                role_id=role_id, salary=salary
-            )
+            text("INSERT INTO Director (RoleID, Salary) VALUES (:role_id, :salary)"),
+            {'role_id': role_id, 'salary': salary}
+        )
          # add special info to actor table with same role id
         elif role_type == 'Actor':
             g.conn.execute(
-                text("INSERT INTO Actor (RoleID, Age, Gender, Line_Count, Pay) VALUES (:role_id, :age, :gender, :line_count, :pay)"),
-                role_id=role_id, age=age, gender=gender, line_count=line_count, pay=pay
-            )
+            text("INSERT INTO Actor (RoleID, Age, Gender, Line_Count, Pay) VALUES (:role_id, :age, :gender, :line_count, :pay)"),
+            {'role_id': role_id, 'age': age, 'gender': gender, 'line_count': line_count, 'pay': pay}
+        )
          # add special info to producer table with same role id
         elif role_type == 'Producer':
             g.conn.execute(
-                text("INSERT INTO Producer (RoleID, Type, In_Guild, Percent_Stake) VALUES (:role_id, :producer_type, :in_guild, :percent_stake)"),
-                role_id=role_id, producer_type=producer_type, in_guild=in_guild, percent_stake=percent_stake
-            )
+            text("INSERT INTO Producer (RoleID, Type, In_Guild, Percent_Stake) VALUES (:role_id, :producer_type, :in_guild, :percent_stake)"),
+            {'role_id': role_id, 'producer_type': producer_type, 'in_guild': in_guild, 'percent_stake': percent_stake}
+        )
          # add special info to crew table with same role id
         elif role_type == 'Crew':
             g.conn.execute(
-                text("INSERT INTO Crew (RoleID, Hourly_Rate) VALUES (:role_id, :hourly_rate)"),
-                role_id=role_id, hourly_rate=hourly_rate
-            )
-
+            text("INSERT INTO Crew (RoleID, Hourly_Rate) VALUES (:role_id, :hourly_rate)"),
+            {'role_id': role_id, 'hourly_rate': hourly_rate}
+        )
         # add the newly created role to needs with the film id that is loffed in 
         film_id = request.form.get('filmID')  
         g.conn.execute(
-            text("INSERT INTO Needs (RoleID, FilmID, Posted) VALUES (:role_id, :film_id, :posted)"),
-            role_id=role_id, film_id=film_id, posted=datetime.utcnow()
+        text("INSERT INTO Needs (RoleID, FilmID, Posted) VALUES (:role_id, :film_id, :posted)"),
+        {'role_id': role_id, 'film_id': film_id, 'posted': datetime.utcnow()}
         )
-
+        
+        g.conn.commit()
         return redirect(url_for('film', filmID=film_id))  
 
     # return any errors that occured
