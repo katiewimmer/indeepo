@@ -714,8 +714,8 @@ def add_role():
     # return any errors that occured
     except IntegrityError as e:
         g.conn.execute(text("ROLLBACK"))
-        error_message = f"An error occurred while adding the role: {str(e)}"
-        return render_template('filmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
+        error_message2 = f"An error occurred while adding the role: {str(e)}"
+        return render_template('filmmaker.html', error_message2=error_message2, film_info={'filmID': film_id}, film_not_found=False)
 
 @app.route('/')
 def index():
