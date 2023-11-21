@@ -196,7 +196,6 @@ def register_student():
 
     # handle integrity error (e.g., unique constraint violation)
     except IntegrityError as e:
-        g.conn.execute(text("DELETE FROM student WHERE StudentID = :studentID"), {'studentID': studentID})
         error_message = f"An error occurred during registration: {str(e)}"
         return render_template('student.html', error_message=error_message)
 
