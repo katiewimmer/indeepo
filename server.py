@@ -183,33 +183,30 @@ def register_student():
             return render_template('student.html', error_message=error_message)
 
         # add the student into the student table
-        result = g.conn.execute(
+        g.conn.execute(
         text("INSERT INTO student (StudentID, Name, Age, Gender, Status, GPA) VALUES (:studentID, :name, :age, :gender, :status, :gpa)"),
         {'studentID': studentID, 'name': name, 'age': age, 'gender': gender, 'status': status, 'gpa': gpa}
-        )       
+        )   
 
         # add to the attends table for the school that was entered
-        try: 
+        # add to the attends table for the school that was entered
+        try:
             g.conn.execute(
             text("INSERT INTO Attends (StudentID, SchoolID, Since) VALUES (:studentID, :schoolID, :sinceDate)"),
             {'studentID': studentID, 'schoolID': school_id, 'sinceDate': sinceDate}
-        )
-
-        # if the attends insert doesnt work, delete the student (all students must attend a school)
+            )
         except IntegrityError as e:
             g.conn.execute(text("DELETE FROM student WHERE StudentID = :studentID"), {'studentID': studentID})
-
-            error_message = f"An error occurred during registration: {str(e)}"
+            error_message = f"An error occurred during registration: {str(e)}"       
             return render_template('student.html', error_message=error_message)
-
-        # render new page with the newly registered student logged in
-        new_student_id = studentID
-        return redirect(url_for('student', studentID=new_student_id))
 
     # return any error messages that occured
     except Exception as e:
         error_message = f"An error occurred during registration: {str(e)}"
         return render_template('student.html', error_message=error_message)
+    
+    # render new page with the newly registered student logged in
+    return redirect(url_for('student', studentID=studentID))
     
 def student_id_exists(student_id):
     # query the student table to see if an id is already in use
