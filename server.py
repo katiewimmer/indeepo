@@ -192,7 +192,7 @@ def register_student():
         try: 
             g.conn.execute(
             text("INSERT INTO Attends (StudentID, SchoolID, Since) VALUES (:studentID, :schoolID, :sinceDate)"),
-            {'studentID': new_student_id, 'schoolID': school_id, 'sinceDate': sinceDate}
+            {'studentID': studentID, 'schoolID': school_id, 'sinceDate': sinceDate}
         )
 
         # if the attends insert doesnt work, delete the student (all students must attend a school)
