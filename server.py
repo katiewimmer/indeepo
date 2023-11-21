@@ -183,10 +183,9 @@ def register_student():
             return render_template('student.html', error_message=error_message)
 
         # add the student into the student table
-        result = g.conn.execute(
-            text("INSERT INTO student (StudentID, Name, Age, Gender, Status, GPA) VALUES (:studentID, :name, :age, :gender, :status, :gpa) RETURNING StudentID"),
-            studentID=studentID, name=name, age=age, gender=gender, status=status, gpa=gpa
-        )
+        query = text("INSERT INTO student (StudentID, Name, Age, Gender, Status, GPA) VALUES (:studentID, :name, :age, :gender, :status, :gpa) RETURNING StudentID")
+        params = {'studentID': studentID, 'name': name, 'age': age, 'gender': gender, 'status': status, 'gpa': gpa}
+        result = g.conn.execute(query, params)
         new_student_id = result.fetchone()[0]
 
         # add to the attends table for the school that was entered
