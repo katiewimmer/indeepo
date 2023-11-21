@@ -12,6 +12,7 @@
         <p>ID: <input type="text" name="schoolID"> <input type="submit" value="Find" class="find-button"></p>
     </form>
 
+    <!-- customized error messafe if the school id entered does not exist-->
     {% if school_not_found and request.args.get('schoolID') %}
     <p>School not found. Check your School ID and try again</p>
     {% endif %}
@@ -19,17 +20,17 @@
     <h2>School Information</h2>
     {% if school_info %}
     <ul>
-        <li style="color: red;">School ID: {{ school_info[0] }}</li>
+        <li style="color: red;">School ID: {{ school_info[0] }}</li> <!-- highlights the security sensitive school id in red-->
         <li>Name: {{ school_info[1] }}</li>
         <li>Location: {{ school_info[2] }}</li>
         <li>Description: {{ school_info[3] }}</li>
     </ul>
     {% else %}
-    <p>No school information available.</p>
+    <p>No school information available.</p> <!-- if there no info on the school or if no id has been entered yet-->
     {% endif %}
 
-    <h2>Students Attending the School</h2>
-    {% if students_info %}
+    <h2>Students Attending the School</h2> <!-- displayed the students that go to that school-->
+    {% if students_info %} <!-- attributes of each student-->
         <table>
             <thead>
                 <tr>
@@ -42,7 +43,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for student in students_info %}
+                {% for student in students_info %} <!-- what goes in the table for each attribute-->
                 <tr>
                     <td>{{ student[0] }}</td>
                     <td>{{ student[1] }}</td>
@@ -55,11 +56,11 @@
             </tbody>
         </table>
     {% else %}
-    <p>No students attending the school.</p>
+    <p>No students attending the school.</p> <!-- case that a school has no studetns-->
     {% endif %}
 
-    <h2>Films Produced by School</h2>
-    {% if films_info %}
+    <h2>Films Produced by School</h2> <!-- shows all of the films that have that school id-->
+    {% if films_info %} <!-- all the attributes of tge film-->
     <table>
         <thead>
             <tr>
@@ -73,13 +74,13 @@
             </tr>
         </thead>
         <tbody>
-            {% for film in films_info %}
+            {% for film in films_info %} <!-- fills the columns of the table with the info-->
             <tr>
                 <td>{{ film[0] }}</td>
                 <td>{{ film[1] }}</td>
                 <td>{{ film[2] }}</td>
                 <td>{{ film[3] }}</td>
-                <td class="description">{{ film[4] }}</td>
+                <td class="description">{{ film[4] }}</td> <!-- translates stage_of_production to more readable terms-->
                 <td>
                     {% if film[5] == 2 %}
                     Made
@@ -95,13 +96,14 @@
         </tbody>
     </table>
     {% else %}
-    <p>No films produced by the school.</p>
+    <p>No films produced by the school.</p> <!-- case that a school doesnt have any films-->
     {% endif %}
 
     <form action="/register_school" method="POST" class="registration-form">
         <h2>Register a New School</h2>
-        <h4>School ID is a unique 8-digit number beginning with a 1 (ex. 1xxxxxxx) <p></p>
+        <h4>School ID is a unique 8-digit number beginning with a 1 (ex. 1xxxxxxx) <p></p> <!-- make the user create a school id-->
             Please remember your ID number for future login!</h4>
+        <!-- prompt for all the info needed for a school-->
         <p>
             School ID: <input type="text" name="schoolID" required>
             Name: <input type="text" name="name" required>
@@ -113,7 +115,7 @@
         <p>
             <input type="submit" value="Register School">
         </p>
-        {% if error_message %}
+        {% if error_message %} <!-- if the stuff in server.py goes wrong, the unique error message is printed if it exists-->
         <p>Problem registering with given information:</p>
         <p style="color: red;">{{ error_message }}</p>
         {% endif %}

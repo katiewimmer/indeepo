@@ -8,27 +8,28 @@
 
     <h2>Find a Role:</h2>
 
+    <!--button to find all of the roles-->
     <form action="/all_roles" method="GET">
         <button type="submit" name="action" value="all_roles">All Roles</button>
     </form>
-
+    <!-- button that only shows actor roles-->
     <form action="/actor_roles" method="GET">
         <button type="submit" name="action" value="actor_roles">Actor Roles</button>
     </form>
-
+    <!-- button that only shows the producer roles-->
     <form action="/producer_roles" method="GET">
         <button type="submit" name="action" value="producer_roles">Producer Roles</button>
     </form>
-
+    <!-- button the shows all the director roles-->
     <form action="/director_roles" method="GET">
         <button type="submit" name="action" value="director_roles">Director Roles</button>
     </form>
-
+    <!--button that shows all of the crew roles-->
     <form action="/crew_roles" method="GET">
         <button type="submit" name="action" value="crew_roles">Crew Roles</button>
     </form>
-
-    {% if all_roles_info %}
+    
+    {% if all_roles_info %} <!-- if there is role info to be displated-->
     <table>
         <thead>
             <tr> 
@@ -42,16 +43,16 @@
             </tr>
         </thead>
         <tbody>
-            {% for role in all_roles_info %}
+            {% for role in all_roles_info %} <!-- for each role, display all the atttriubtes-->
                 <tr>
                     <td>{{ role[0] }}</td>
                     <td>{{ role[1] }}</td>
                     <td>{{ role[2] }}</td>
                     <td>
                         {% if role[3] == 1 %}
-                        <span style="color: green;">Open</span>
+                        <span style="color: green;">Open</span> <!-- if its 1, green and says "open"-->
                         {% elif role[3] == 0 %}
-                        <span style="color: red;">Closed</span>
+                        <span style="color: red;">Closed</span> <!-- if its 0, red and says "closed"-->
                         {% else %}
                         N/A
                         {% endif %}
@@ -66,7 +67,7 @@
     </table>
     {% endif %}
 
-    {% if actor_roles_info %}
+    {% if actor_roles_info %} <!-- this is populated if the actor button was pressed-->
     <table>
         <thead>
             <tr>
@@ -84,16 +85,16 @@
             </tr>
         </thead>
         <tbody>
-            {% for role in actor_roles_info %}
+            {% for role in actor_roles_info %}  <!-- for each role, display all the atttriubtes-->
                 <tr>
                     <td>{{ role[0] }}</td>
                     <td>{{ role[1] }}</td>
                     <td>{{ role[2] }}</td>
                     <td>
                         {% if role[3] == 1 %}
-                        <span style="color: green;">Open</span>
+                        <span style="color: green;">Open</span>  <!-- if its 1, green and says "open"-->
                         {% elif role[3] == 0 %}
-                        <span style="color: red;">Closed</span>
+                        <span style="color: red;">Closed</span> <!-- if its 0, red and says "closed"-->
                         {% else %}
                         N/A
                         {% endif %}
@@ -111,7 +112,7 @@
     </table>
     {% endif %}
 
-    {% if producer_roles_info %}
+    {% if producer_roles_info %} <!-- this is popilated if the producer button was pressed-->
     <table>
         <thead>
             <tr>
@@ -134,9 +135,9 @@
                     <td>{{ role[2] }}</td>
                     <td>
                         {% if role[3] == 1 %}
-                        <span style="color: green;">Open</span>
+                        <span style="color: green;">Open</span>  <!-- if its 1, green and says "open"-->
                         {% elif role[3] == 0 %}
-                        <span style="color: red;">Closed</span>
+                        <span style="color: red;">Closed</span> <!-- if its 0, red and says "closed"-->
                         {% else %}
                         N/A
                         {% endif %}
@@ -152,7 +153,7 @@
     </table>
 {% endif %}
 
-{% if director_roles_info %}
+{% if director_roles_info %} <!-- this is populated if the director button was pressed-->
     <table>
         <thead>
             <tr>
@@ -174,9 +175,9 @@
                     <td>{{ role[2] }}</td>
                     <td>
                         {% if role[3] == 1 %}
-                        <span style="color: green;">Open</span>
+                        <span style="color: green;">Open</span>  <!-- if its 1, green and says "open"-->
                         {% elif role[3] == 0 %}
-                        <span style="color: red;">Closed</span>
+                        <span style="color: red;">Closed</span> <!-- if its 0, red and says "closed"-->
                         {% else %}
                         N/A
                         {% endif %}
@@ -191,7 +192,7 @@
     </table>
 {% endif %}
 
-{% if crew_roles_info %}
+{% if crew_roles_info %} <!-- will have crew role info if the crew button was pressed-->
     <table>
         <thead>
             <tr>
@@ -212,10 +213,10 @@
                     <td>{{ role[1] }}</td>
                     <td>{{ role[2] }}</td>
                     <td>
-                        {% if role[3] == 1 %}
-                        <span style="color: green;">Open</span>
-                        {% elif role[3] == 0 %}
-                        <span style="color: red;">Closed</span>
+                        {% if role[3] == 1 %} 
+                        <span style="color: green;">Open</span> <!-- if its 1, green and says "open"-->
+                        {% elif role[3] == 0 %} 
+                        <span style="color: red;">Closed</span> <!-- if its 0, red and says "closed"-->
                         {% else %}
                         N/A
                         {% endif %}

@@ -607,6 +607,7 @@ def add_student_to_film(student_id, film_id, role_id):
         print(f"Error adding student to film: {str(e)}")
         return False
 
+# USED AI FOR THIS FUNCTION
 @app.context_processor 
 def inject_all_schools():
     # make sure that the schools are already available, even if there is no student/film logged in
