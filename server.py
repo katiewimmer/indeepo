@@ -197,11 +197,13 @@ def register_student():
     # handle integrity error (e.g., unique constraint violation)
     except IntegrityError as e:
         error_message = f"An error occurred during registration: {str(e)}"
+        g.conn.rollback()
         return render_template('student.html', error_message=error_message)
 
     # handle other exceptions
     except Exception as e:
         error_message = f"An error occurred during registration: {str(e)}"
+        g.conn.rollback()
         return render_template('student.html', error_message=error_message)
 
     # render new page with the newly registered student logged in
