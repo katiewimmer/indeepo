@@ -57,7 +57,7 @@
     <div class="registration-form">
         <h2>Register a New Film</h2>
         <form action="/register_film" method="POST">
-            <h4>Film ID is a unique 8-digit number beginning with a 2 (ex. 2xxxxxxx) <p></p>
+            <h4>Film ID is a unique 8-digit number beginning with a 2 (ex. 2xxxxxxx)<p></p>
                 Please remember your ID number for future login!</h4>
             <!-- user has to provide their own film id, format checked in server.py-->
             <!-- all the info needed for a new film tuple-->
@@ -66,17 +66,17 @@
             <p></p>
             <label for="title">Title:</label>
             <input type="text" id="title" name="title" required>
-
+    
             <label for="year">Year:</label>
             <input type="number" id="year" name="year" required>
-
+    
             <label for="genre">Genre:</label>
             <input type="text" id="genre" name="genre" required>
             <p></p>
             <label for="description">Description:</label>
             <textarea id="description" name="description" rows="4" cols="30" style="vertical-align: top;"
                 required></textarea>
-
+    
             <!-- make stage of production more readable-->
             <!-- USED AI FOR THIS FUNCTIONALITY-->
             <label for="stageOfProduction">Stage of Production:</label>
@@ -85,24 +85,21 @@
                 <option value="1">Being Made</option>
                 <option value="2">Made</option>
             </select>
-
+    
             <p></p>
             <label for="budget">Budget:</label>
             <input type="number" step="0.01" id="budget" name="budget" required>
-
-            <!-- creates a drop down menu for schools-->
+    
+            <!-- creates a drop-down menu for schools-->
             <!-- USED AI FOR THIS FUNCTIONALITY-->
             <p></p>
             <label for="schoolSelect">School:</label>
             <select id="schoolSelect" name="schoolID" required>
                 {% for school in all_schools %}
-                    <option value="{{ school[0] }}">{{ school[1] }}</option>
+                <option value="{{ school[0] }}">{{ school[1] }}</option>
                 {% endfor %}
             </select>
-
-            <!-- the school id is what ends up being passed to server.py-->
-            <input type="hidden" id="schoolID" name="schoolID">
-
+    
             <p></p>
             <input type="submit" value="Register Film">
             {% if error_message %}
@@ -110,15 +107,6 @@
             <p style="color: red;">{{ error_message }}</p>
             {% endif %}
         </form>
-
-        <!-- JavaScript to update the hidden 'schoolID' field -->
-        <!-- USED AI FOR THIS FUNCTIONALITY-->
-        <script>
-            document.getElementById('schoolSelect').addEventListener('change', function () {
-                // Set the hidden field value to the selected school ID
-                document.getElementById('schoolID').value = this.value;
-            });
-        </script>
     </div>
     </div>
 
