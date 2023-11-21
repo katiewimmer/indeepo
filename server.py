@@ -719,7 +719,8 @@ def add_role():
 
     # renders the page with the same film info, passes along error message
     film_info = fetch_film_info(film_id)
-    return render_template('filmmaker.html', error_message2=error_message2, film_info=film_info, film_not_found=False)
+    school_info = fetch_school_info_by_film(film_id)
+    return render_template('filmmaker.html', error_message2=error_message2, film_info=film_info, film_not_found=False, school_info=school_info)
 
 @app.route('/')
 def index():
