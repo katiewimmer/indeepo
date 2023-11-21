@@ -184,9 +184,9 @@ def register_student():
 
         # add the student into the student table
         result = g.conn.execute(
-        text("INSERT INTO student (StudentID, Name, Age, Gender, Status, GPA) VALUES (:studentID, :name, :age, :gender, :status, :gpa) RETURNING StudentID"),
+        text("INSERT INTO student (StudentID, Name, Age, Gender, Status, GPA) VALUES (:studentID, :name, :age, :gender, :status, :gpa)"),
         {'studentID': studentID, 'name': name, 'age': age, 'gender': gender, 'status': status, 'gpa': gpa}
-        )
+        )       
 
         # add to the attends table for the school that was entered
         try: 
