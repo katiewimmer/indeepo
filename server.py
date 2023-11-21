@@ -549,7 +549,9 @@ def register_film():
 
     except Exception as e:
         # return any error messages that came up
+        g.conn.rollback()
         error_message = f"An error occurred during registration: {str(e)}"
+
         return render_template('filmmaker.html', error_message=error_message, film_info=None, film_not_found=True)
 
 @app.route('/add_student_to_film', methods=['POST'])
@@ -590,6 +592,7 @@ def add_student_to_film():
 
     except Exception as e:
         # return any errors that occured
+        g.conn.rollback()
         error_message_2 = f'An error occurred: {str(e)}'
         return render_template('filmmaker.html', film_info=fetch_film_info(film_id),
          school_info=fetch_school_info_by_film(film_id), all_schools=fetch_all_schools(), 
