@@ -94,9 +94,9 @@
             <!-- USED AI FOR THIS FUNCTIONALITY-->
             <p></p>
             <label for="schoolSelect">School:</label>
-            <select id="schoolSelect" name="schoolSelect" required>
+            <select id="schoolSelect" name="schoolID" required>
                 {% for school in all_schools %}
-                <option value="{{ school[0] }}">{{ school[1] }}</option>
+                    <option value="{{ school[0] }}">{{ school[1] }}</option>
                 {% endfor %}
             </select>
 
