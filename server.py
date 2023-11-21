@@ -360,7 +360,7 @@ def fetch_school_info2(school_id):
             FROM School
             WHERE SchoolID = :id
         """
-        cursor = g.conn.execute(text(query), id=school_id)
+        cursor = g.conn.execute(text(query), {'id':school_id})
         school_info = cursor.fetchone()
         return school_info
     finally:
@@ -376,7 +376,7 @@ def fetch_students_attending_school(school_id):
             WHERE Attends.SchoolID = :id
         """
         # have to joina ttends and school
-        cursor = g.conn.execute(text(query), id=school_id)
+        cursor = g.conn.execute(text(query), {'id':school_id})
         students_info = cursor.fetchall()
         return students_info
     finally:
@@ -392,7 +392,7 @@ def fetch_films_by_school(school_id):
             ORDER BY Film.Year DESC
         """
         # list them by year, starting with the newest ones
-        cursor = g.conn.execute(text(query), id=school_id)
+        cursor = g.conn.execute(text(query), {'id':school_id})
         films_info = cursor.fetchall()
         return films_info
     finally:
@@ -471,7 +471,7 @@ def fetch_film_info(film_id):
             FROM Film
             WHERE FilmID = :id
         """
-        cursor = g.conn.execute(text(query), id=film_id)
+        cursor = g.conn.execute(text(query), {'id':film_id})
         film_info = cursor.fetchone()
         return film_info
     finally:
@@ -487,7 +487,7 @@ def fetch_school_info_by_film(film_id):
             JOIN Film ON School.SchoolID = Film.SchoolID
             WHERE Film.FilmID = :id
         """
-        cursor = g.conn.execute(text(query), id=film_id)
+        cursor = g.conn.execute(text(query), {'id':film_id})
         school_info = cursor.fetchone()
         return school_info
     finally:
@@ -502,7 +502,7 @@ def fetch_students_for_school(school_id):
             JOIN Attends A ON S.StudentID = A.StudentID
             WHERE A.SchoolID = :school_id;
         """
-        cursor = g.conn.execute(text(query), school_id=school_id)
+        cursor = g.conn.execute(text(query), {'school_id':school_id})
         students_info = cursor.fetchall()
         return students_info
     finally:
