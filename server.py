@@ -189,15 +189,15 @@ def register_student():
         new_student_id = result.fetchone()[0]
 
         # add to the attends table for the school that was entered
+        query = text("INSERT INTO Attends (StudentID, SchoolID, Since) VALUES (:studentID, :schoolID, :sinceDate)")
+        params = {'studentID': new_student_id, 'schoolID': school_id, 'sinceDate': sinceDate}
+
         try:
-            g.conn.execute(
-                text("INSERT INTO Attends (StudentID, SchoolID, Since) VALUES (:studentID, :schoolID, :sinceDate)"),
-                studentID=new_student_id, schoolID=school_id, sinceDate=sinceDate
-            )
+            g.conn.execute(query, params)   
 
         # if the attends insert doesnt work, delete the student (all students must attend a school)
         except IntegrityError as e:
-            g.conn.execute(text("DELETE FROM student WHERE StudentID = :studentID"), studentID=new_student_id)
+            g.conn.execute(text("DELETE FROM student WHERE StudentID = :studentID"), {'studentID': new_student_id})
 
             error_message = f"An error occurred during registration: {str(e)}"
             return render_template('student.html', error_message=error_message)
